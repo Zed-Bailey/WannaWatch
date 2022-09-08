@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/movieFrame"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/posterImage"
+        android:layout_width="@dimen/moviePosterWidth"
+        android:layout_height="@dimen/moviePosterHeight"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="8dp"
+        app:srcCompat="@drawable/ic_launcher_background" />
+
+    <ImageView
+        android:id="@+id/watchedTick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/ic_baseline_check_circle_24"
+        tools:visibility="visible" />
+
+</FrameLayout>
+

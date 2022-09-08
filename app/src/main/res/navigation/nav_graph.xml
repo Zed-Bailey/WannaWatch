@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.zed.wannawatch.ui.screens.main.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment"
+            app:popUpTo="@id/homeFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_detailFragment"
+            app:destination="@id/detailFragment"
+            app:popUpTo="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.zed.wannawatch.ui.screens.detail.DetailFragment"
+        android:label="Detail" >
+        <argument
+            android:name="movie"
+            app:argType="com.zed.wannawatch.services.models.Movie" />
+        <action
+            android:id="@+id/action_detailFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.zed.wannawatch.ui.screens.search.SearchFragment"
+        android:label="Search">
+        <action
+            android:id="@+id/action_searchFragment_to_searchDetailFragment"
+            app:destination="@id/searchDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchDetailFragment"
+        android:name="com.zed.wannawatch.ui.screens.search.SearchDetailFragment"
+        android:label="Add"
+        tools:layout="@layout/fragment_search_detail">
+        <action
+            android:id="@+id/action_searchDetailFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <argument
+            android:name="clickedMovie"
+            app:argType="com.zed.wannawatch.services.models.Movie" />
+    </fragment>
+</navigation>
