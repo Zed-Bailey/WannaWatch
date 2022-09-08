@@ -23,7 +23,6 @@ class SearchViewModel(private val repository: MovieRepository): ViewModel() {
             val result = apiRepository.searchRequest(query.trim())
             result.fold(onSuccess = { data ->
                 results.value = data.results
-                error.value = true
             }, onFailure = {
                 Log.e("SearchViewModel", "failed to execute network call :(")
                 error.value = true

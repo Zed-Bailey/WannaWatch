@@ -40,7 +40,7 @@ class SearchFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false)
 
 //        https://www.bragitoff.com/2017/04/trigger-button-click-press-doneenter-key-keyboard-solved/
-        binding.textInput.setOnEditorActionListener { textView, actionId, keyEvent ->
+        binding.textInput.setOnEditorActionListener { textView, actionId, _ ->
             if(actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(textView.windowToken, 0)
@@ -54,7 +54,7 @@ class SearchFragment : Fragment() {
 
         viewModel.error.observe(viewLifecycleOwner) { wasError ->
             if (wasError) {
-                val snack = Snackbar.make(requireView(), "Sorry there was an error while trying to", Snackbar.LENGTH_SHORT)
+                val snack = Snackbar.make(requireView(), "Sorry there was an error while trying to query the API", Snackbar.LENGTH_SHORT)
                 snack.animationMode = Snackbar.ANIMATION_MODE_FADE
                 snack.show()
                 viewModel.toggleErrorOff()
