@@ -74,6 +74,9 @@ class SearchFragment : Fragment() {
 
         // observe result data, submit new data to the list on change
         viewModel.results.observe(viewLifecycleOwner) {
+            if(it.isEmpty()) {
+                Toast.makeText(context, "No results", Toast.LENGTH_SHORT).show()
+            }
             adapter.submitList(it)
         }
 

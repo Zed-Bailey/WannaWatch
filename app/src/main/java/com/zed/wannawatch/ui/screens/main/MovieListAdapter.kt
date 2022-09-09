@@ -46,7 +46,6 @@ class MovieListAdapter(private val onClickListener: OnClickListener<Movie>): Lis
             // load the poster image using coil
             posterImage.load(item.posterUrl) {
                 crossfade(true)
-                placeholder(R.drawable.ic_launcher_background)
             }
 
             if(item.watched) {

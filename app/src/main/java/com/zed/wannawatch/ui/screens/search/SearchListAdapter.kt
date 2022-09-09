@@ -46,7 +46,6 @@ class SearchListAdapter(private val onClickListener: OnClickListener<SearchResul
             // load the poster image using coil
             posterImage.load(item.poster) {
                 crossfade(true)
-                placeholder(R.drawable.ic_launcher_background)
             }
         }
     }
