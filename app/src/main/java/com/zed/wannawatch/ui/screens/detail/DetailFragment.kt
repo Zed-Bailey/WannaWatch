@@ -41,6 +41,8 @@ class DetailFragment : Fragment() {
         when(item.itemId) {
             R.id.deleteOption -> {
                 viewModel.delete(data)
+                Toast.makeText(requireContext(), "Deleted Movie", Toast.LENGTH_SHORT).show()
+
                 // navigate back home
                 val action = DetailFragmentDirections.actionDetailFragmentToHomeFragment()
                 findNavController().navigate(action)
@@ -111,9 +113,9 @@ class DetailFragment : Fragment() {
         binding.movieTitle.text = data.title
 
         // handles the radio group button change notifications
-        binding.ratingEmojiGroup.setOnCheckedChangeListener { _, i ->
+        binding.ratingEmojiGroup.setOnCheckedChangeListener { _, id ->
             var rating = data.rating
-            when (i) {
+            when (id) {
                 R.id.oneStar -> rating = 1
                 R.id.twoStar -> rating = 2
                 R.id.threeStar -> rating = 3
