@@ -12,6 +12,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:startIconDrawable="@drawable/ic_baseline_search_24"
+            app:startIconContentDescription="search icon"
             android:layout_width="254dp"
             android:layout_height="62dp"
             android:layout_marginTop="16dp"
