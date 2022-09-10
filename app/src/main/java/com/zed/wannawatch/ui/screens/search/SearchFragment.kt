@@ -72,9 +72,10 @@ class SearchFragment : Fragment() {
         binding.resultList.adapter = adapter
         binding.resultList.layoutManager = GridLayoutManager(context, 3)
 
-        // observe result data, submit new data to the list on change
+        // observe result data, submit new data to the recycler view on change
         viewModel.results.observe(viewLifecycleOwner) {
-            if(it.isEmpty()) {
+            // if the list is null, then there are no results for the query
+            if(it == null) {
                 Toast.makeText(context, "No results", Toast.LENGTH_SHORT).show()
             }
             adapter.submitList(it)
