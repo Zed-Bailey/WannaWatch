@@ -1,5 +1,6 @@
 package com.zed.wannawatch.ui.screens.detail
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -40,12 +41,8 @@ class DetailFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.deleteOption -> {
-                viewModel.delete(data)
-                Toast.makeText(requireContext(), "Deleted Movie", Toast.LENGTH_SHORT).show()
-
-                // navigate back home
-                val action = DetailFragmentDirections.actionDetailFragmentToHomeFragment()
-                findNavController().navigate(action)
+                // show alert dialog
+                deleteAlert()
                 return true
             }
         }
@@ -95,7 +92,6 @@ class DetailFragment : Fragment() {
                 binding.watchedButton.text = "Unwatch"
             }
             viewModel.update(data.copy())
-//            Snackbar.make(it, notif, Snackbar.LENGTH_SHORT).setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
             Toast.makeText(context, notif, Toast.LENGTH_SHORT).show()
         }
 
@@ -129,4 +125,25 @@ class DetailFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Shows a confirmation dialog to the user
+     */
+    private fun deleteAlert() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Delete Movie")
+        builder.setMessage("Are you sure you want to delete this movie?")
+
+        builder.setPositiveButton("Yes") { _, _ ->
+            viewModel.delete(data)
+            Toast.makeText(requireContext(), "Deleted Movie", Toast.LENGTH_SHORT).show()
+
+            // navigate back home
+            val action = DetailFragmentDirections.actionDetailFragmentToHomeFragment()
+            findNavController().navigate(action)
+        }
+        builder.setNegativeButton("No", null)
+
+
+        builder.show()
+    }
 }
