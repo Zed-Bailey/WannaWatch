@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.zed.wannawatch.services.models.Movie
 
-@Database(entities = [Movie::class], version = 1)
+@Database(entities = [Movie::class], version = 1, exportSchema = false)
 abstract class MovieDatabase: RoomDatabase() {
     abstract fun movieDao(): MovieDAO
 
