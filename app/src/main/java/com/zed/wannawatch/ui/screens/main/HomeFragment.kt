@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
@@ -31,37 +33,45 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
-
-        val recycler = binding.movieList
-        // pass the click listener to the adapter
-        val movieListAdapter = MovieListAdapter(OnClickListener { movieClicked(it) })
-
-        recycler.adapter = movieListAdapter
-        recycler.layoutManager = GridLayoutManager(context, 3)
-
-        binding.addButton.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment()
-            findNavController().navigate(action)
-        }
-
-        // toggle visibility of the noMoviesText if no movies have been added
-        if(viewModel.movies.value?.isEmpty() == true) {
-            binding.noMoviesText.visibility = View.VISIBLE
-        }
-
-        viewModel.movies.observe(viewLifecycleOwner) {
-            movieListAdapter.submitList(it)
-
-            // toggle visibility of the noMoviesText if movies have been added
-            if(viewModel.movies.value?.isEmpty() == true) {
-                binding.noMoviesText.visibility = View.VISIBLE
-            } else {
-                binding.noMoviesText.visibility = View.INVISIBLE
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                HomeScreen(viewModel = viewModel)
             }
         }
+//
+//        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
+//
+//        val recycler = binding.movieList
+//        // pass the click listener to the adapter
+//        val movieListAdapter = MovieListAdapter(OnClickListener { movieClicked(it) })
+//
+//        recycler.adapter = movieListAdapter
+//        recycler.layoutManager = GridLayoutManager(context, 3)
+//
+//        binding.addButton.setOnClickListener {
+//            val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment()
+//            findNavController().navigate(action)
+//        }
+//
+//        // toggle visibility of the noMoviesText if no movies have been added
+//        if(viewModel.movies.value?.isEmpty() == true) {
+//            binding.noMoviesText.visibility = View.VISIBLE
+//        }
+//
+//        viewModel.movies.observe(viewLifecycleOwner) {
+//            movieListAdapter.submitList(it)
+//
+//            // toggle visibility of the noMoviesText if movies have been added
+//            if(viewModel.movies.value?.isEmpty() == true) {
+//                binding.noMoviesText.visibility = View.VISIBLE
+//            } else {
+//                binding.noMoviesText.visibility = View.INVISIBLE
+//            }
+//        }
+//
+//        return binding.root
 
-        return binding.root
     }
 
     /**
