@@ -1,12 +1,31 @@
 package com.zed.wannawatch.ui.screens.main
 
 import androidx.lifecycle.*
+import com.zed.wannawatch.services.HomeScreenWatchedFilter
+import com.zed.wannawatch.services.MovieRatingFilter
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.repository.MovieRepository
 
 class MainViewModel(private val repository: MovieRepository): ViewModel() {
 
     val movies: LiveData<List<Movie>> = repository.allMovies.asLiveData()
+
+
+    fun filterMovies(movies: List<Movie>, rating: MovieRatingFilter, watchedFilter: HomeScreenWatchedFilter): List<Movie> {
+
+        return movies.filter {
+
+            // filter by watched status
+            val result = if(watchedFilter == HomeScreenWatchedFilter.All)
+                true
+            else
+                watchedFilter.watched == it.watched
+
+            result
+        }.filter {
+            it.rating >= rating.ratingValue
+        }
+    }
 
 }
 //https://developer.android.com/codelabs/android-room-with-a-view-kotlin#9
