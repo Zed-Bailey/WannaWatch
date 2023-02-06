@@ -8,6 +8,7 @@ import com.zed.wannawatch.services.repository.MovieRepository
 
 class MainViewModel(private val repository: MovieRepository): ViewModel() {
 
+
     val movies: LiveData<List<Movie>> = repository.allMovies.asLiveData()
 
 
