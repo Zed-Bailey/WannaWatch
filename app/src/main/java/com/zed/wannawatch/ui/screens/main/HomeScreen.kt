@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
 import androidx.compose.foundation.layout.Arrangement.SpaceEvenly
@@ -19,7 +20,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -28,10 +28,11 @@ import coil.compose.AsyncImage
 import com.zed.wannawatch.R
 import com.zed.wannawatch.services.HomeScreenWatchedFilter
 import com.zed.wannawatch.services.MovieRatingFilter
+import com.zed.wannawatch.services.models.Movie
 
 
 @Composable
-fun HomeScreen(viewModel: MainViewModel) {
+fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchClicked: () -> Unit) {
 
     val movies by viewModel.movies.observeAsState()
 
@@ -139,23 +140,11 @@ fun HomeScreen(viewModel: MainViewModel) {
                     columns = GridCells.Adaptive(minSize = 128.dp)
                 ) {
                     items(filteredMovies.size) {
-                        Box(modifier = Modifier.width(130.dp)) {
-
-                            AsyncImage(model = filteredMovies[it].posterUrl,
-                                contentDescription = "movie poster image",
-                                modifier = Modifier.width(128.dp)
-                            )
-
-                            if(filteredMovies[it].watched) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.wacthed_tick),
-                                    contentDescription = null,
-                                    modifier = Modifier.align(Alignment.TopEnd)
-                                )
-
-                            }
-
-                        }
+                        GridItem(watched = filteredMovies[it].watched,
+                            posterUrl = filteredMovies[it].posterUrl,
+                            onclick = {
+                                movieClicked(filteredMovies[it])
+                        })
 
                     }
                 }
@@ -166,8 +155,10 @@ fun HomeScreen(viewModel: MainViewModel) {
 
         SearchFAB(modifier = Modifier
             .align(Alignment.BottomEnd)
-            .padding(20.dp)) {
+            .padding(20.dp)
+        ) {
             Log.i("com.zed.wannawatch", "Search fab clicked")
+            searchClicked()
         }
     }
 
@@ -176,11 +167,41 @@ fun HomeScreen(viewModel: MainViewModel) {
 
 }
 
+// TODO component needs a better name
+@Composable
+fun GridItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
+
+    Box(modifier = Modifier
+        .width(128.dp)
+        .clickable {
+            onclick()
+        }) {
+
+        AsyncImage(model = posterUrl,
+            contentDescription = "movie poster image",
+            modifier = Modifier.width(128.dp),
+
+
+        )
+
+        if(watched) {
+            Icon(
+                // TODO fix watched tick name
+                painter = painterResource(id = R.drawable.wacthed_tick),
+                contentDescription = null,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+
+        }
+
+    }
+}
+
 @Composable
 fun SearchFAB(modifier: Modifier, onclick : () -> Unit) {
     FloatingActionButton(
         modifier = modifier,
-        onClick = onclick
+        onClick = onclick,
     ) {
         Icon(Icons.Rounded.Search, contentDescription = "Search FAB")
     }
