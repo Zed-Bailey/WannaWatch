@@ -44,7 +44,7 @@ class SearchListAdapter(private val onClickListener: OnClickListener<SearchResul
         fun bind(item: SearchResult) {
             Log.d("SearchListAdapter", "ViewHolder.bind")
             // load the poster image using coil
-            posterImage.load(item.poster) {
+            posterImage.load(item.Poster) {
                 crossfade(true)
             }
         }
