@@ -1,5 +1,6 @@
 package com.zed.wannawatch.ui.screens.main
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.zed.wannawatch.services.HomeScreenWatchedFilter
 import com.zed.wannawatch.services.MovieRatingFilter
@@ -11,6 +12,7 @@ class MainViewModel(private val repository: MovieRepository): ViewModel() {
 
     val movies: LiveData<List<Movie>> = repository.allMovies.asLiveData()
 
+    val fabExpanded = mutableStateOf(true)
 
     fun filterMovies(movies: List<Movie>, rating: MovieRatingFilter, watchedFilter: HomeScreenWatchedFilter): List<Movie> {
 

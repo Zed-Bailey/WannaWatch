@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
 import androidx.compose.foundation.layout.Arrangement.SpaceEvenly
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.Check
@@ -16,7 +18,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -34,13 +38,20 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
     val movies by viewModel.movies.observeAsState()
 
     var watchedFilterStatus by remember { mutableStateOf(HomeScreenWatchedFilter.All) }
-    val watchedFilterOptions = listOf<HomeScreenWatchedFilter>(HomeScreenWatchedFilter.All, HomeScreenWatchedFilter.Watched, HomeScreenWatchedFilter.Unwatched)
+    val watchedFilterOptions = listOf(HomeScreenWatchedFilter.All, HomeScreenWatchedFilter.Watched, HomeScreenWatchedFilter.Unwatched)
     var watchedFilterExpanded by remember { mutableStateOf(false) }
 
     var ratingFilterValue by remember { mutableStateOf(MovieRatingFilter.All) }
-    val ratingFilterOptions = listOf<MovieRatingFilter>(MovieRatingFilter.All, MovieRatingFilter.One, MovieRatingFilter.Two, MovieRatingFilter.Three, MovieRatingFilter.Four, MovieRatingFilter.Five)
+    val ratingFilterOptions = listOf(MovieRatingFilter.All, MovieRatingFilter.One, MovieRatingFilter.Two, MovieRatingFilter.Three, MovieRatingFilter.Four, MovieRatingFilter.Five)
     var ratingFilterExpanded by remember { mutableStateOf(false) }
 
+    val listState = rememberLazyGridState()
+
+    val expandedFabState = remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex == 0
+        }
+    }
 
     Box () {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -61,7 +72,7 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
                             watchedFilterExpanded = true
                         }
                     ) {
-                        Text(text = "filter watched")
+                        Text(text = "filter by watched")
                         Icon(Icons.Rounded.ArrowDropDown, contentDescription = "drop down arrow")
                     }
 
@@ -76,10 +87,13 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
                                 },
                                 enabled = (it != watchedFilterStatus),
                                 text = {
-                                    Row(horizontalArrangement = SpaceBetween) {
-                                        Text(it.toString())
-                                        if(it == watchedFilterStatus)
-                                            Icon(Icons.Rounded.Check, contentDescription = "check mark for filter selected status")
+                                    Text(it.toString())
+                                }, trailingIcon = {
+                                    if(it == watchedFilterStatus) {
+                                        Icon(
+                                            Icons.Rounded.Check,
+                                            contentDescription = "check mark for watched status selected"
+                                        )
                                     }
                                 })
                         }
@@ -110,14 +124,17 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
                                 },
                                 enabled = (it != ratingFilterValue),
                                 text = {
-                                    Row(horizontalArrangement = SpaceEvenly) {
+                                    if(it.ratingValue == -1 ) {
                                         Text(it.toString())
-                                        if(it == ratingFilterValue) {
-                                            Icon(
-                                                Icons.Rounded.Check,
-                                                contentDescription = "check mark for rating selected status"
-                                            )
-                                        }
+                                    } else {
+                                        Text(it.toString() + if (it.ratingValue == 1) " star" else " stars")
+                                    }
+                                }, trailingIcon = {
+                                    if(it == ratingFilterValue) {
+                                        Icon(
+                                            Icons.Rounded.Check,
+                                            contentDescription = "check mark for rating selected status"
+                                        )
                                     }
                                 })
                         }
@@ -133,6 +150,9 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
                 val filteredMovies = viewModel.filterMovies(movies ?: listOf(), ratingFilterValue, watchedFilterStatus)
 
                 LazyVerticalGrid(
+                    state = listState,
+                    userScrollEnabled = true ,
+                    contentPadding = PaddingValues(vertical = 10.dp),
                     modifier = Modifier.fillMaxSize(),
                     columns = GridCells.Adaptive(minSize = 128.dp)
                 ) {
@@ -147,12 +167,14 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
                 }
 
             }
-
         }
 
+
+//        https://itnext.io/floating-action-button-in-jetpack-compose-with-material-3-10ba8bff415a
         SearchFAB(modifier = Modifier
             .align(Alignment.BottomEnd)
-            .padding(20.dp)
+            .padding(20.dp),
+            expanded = viewModel.fabExpanded.value
         ) {
             Log.i("com.zed.wannawatch", "Search fab clicked")
             searchClicked()
@@ -173,8 +195,6 @@ fun GridItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
         AsyncImage(model = posterUrl,
             contentDescription = "movie poster image",
             modifier = Modifier.width(128.dp),
-
-
         )
 
         if(watched) {
@@ -182,7 +202,8 @@ fun GridItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
                 // TODO fix watched tick name
                 painter = painterResource(id = R.drawable.wacthed_tick),
                 contentDescription = null,
-                modifier = Modifier.align(Alignment.TopEnd)
+                modifier = Modifier.align(Alignment.TopEnd),
+                tint = Color.Unspecified
             )
 
         }
@@ -191,12 +212,27 @@ fun GridItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
 }
 
 @Composable
-fun SearchFAB(modifier: Modifier, onclick : () -> Unit) {
-    FloatingActionButton(
+fun SearchFAB(modifier: Modifier, expanded: Boolean, onclick : () -> Unit) {
+
+    ExtendedFloatingActionButton(
         modifier = modifier,
+        text = {
+            Text(text = "Search")
+        },
+        icon = {
+            Icon(Icons.Rounded.Search, contentDescription = "Search FAB")
+        },
         onClick = onclick,
-    ) {
-        Icon(Icons.Rounded.Search, contentDescription = "Search FAB")
-    }
+        expanded = expanded,
+//        containerColor = colors.secondaryVariant,
+    )
+
+
+//    FloatingActionButton(
+//        modifier = modifier,
+//        onClick = onclick,
+//    ) {
+//        Icon(Icons.Rounded.Search, contentDescription = "Search FAB")
+//    }
 
 }
