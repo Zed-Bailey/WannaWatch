@@ -2,7 +2,6 @@ package com.zed.wannawatch.ui.screens.search
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -63,7 +62,7 @@ class SearchFragment : Fragment() {
 
 
         val adapter = SearchListAdapter(OnClickListener {
-            val movie = Movie(it.imdbID,it.title, it.poster)
+            val movie = Movie(it.imdbID,it.Title, it.Poster)
             val action = SearchFragmentDirections.actionSearchFragmentToSearchDetailFragment(movie)
             findNavController().navigate(action)
         })
