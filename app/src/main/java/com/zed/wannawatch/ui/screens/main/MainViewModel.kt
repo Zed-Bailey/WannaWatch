@@ -7,6 +7,7 @@ import com.zed.wannawatch.services.MovieRatingFilter
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.repository.MovieRepository
 
+// todo rename to HomeViewModel
 class MainViewModel(private val repository: MovieRepository): ViewModel() {
 
 

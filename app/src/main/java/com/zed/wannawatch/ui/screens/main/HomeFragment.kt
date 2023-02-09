@@ -32,9 +32,10 @@ class HomeFragment : Fragment() {
                         findNavController().navigate(action)
                     },
                     searchClicked = {
-                    val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment()
-                    findNavController().navigate(action)
-                })
+                        val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment()
+                        findNavController().navigate(action)
+                    }
+                )
             }
         }
 

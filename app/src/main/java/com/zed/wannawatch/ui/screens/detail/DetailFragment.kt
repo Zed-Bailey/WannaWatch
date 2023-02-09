@@ -2,40 +2,21 @@ package com.zed.wannawatch.ui.screens.detail
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.widget.addTextChangedListener
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import coil.load
-import com.google.android.material.snackbar.Snackbar
 import com.zed.wannawatch.R
-import com.zed.wannawatch.databinding.FragmentDetailBinding
-import com.zed.wannawatch.services.MovieApplication
-import com.zed.wannawatch.services.models.Movie
-import com.zed.wannawatch.ui.screens.main.HomeFragmentDirections
-import com.zed.wannawatch.ui.screens.main.HomeScreen
-import com.zed.wannawatch.ui.screens.search.SearchViewModelFactory
 
 //https://developer.android.com/guide/navigation/navigation-pass-data#Safe-args
 
 class DetailFragment : Fragment() {
 
-    private lateinit var binding: FragmentDetailBinding
     private val args: DetailFragmentArgs by navArgs()
-    lateinit var data: Movie
 
-//    private val viewModel: DetailViewModel by viewModels {
-//        DetailViewModelFactory((requireActivity().application as MovieApplication).repository)
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
