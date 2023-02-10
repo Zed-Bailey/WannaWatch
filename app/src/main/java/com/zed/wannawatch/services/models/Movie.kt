@@ -8,13 +8,15 @@ import java.io.Serializable
 @Entity
 data class Movie(
     @PrimaryKey val imdbID: String,
-    @ColumnInfo(name = "title") val title: String,
-    @ColumnInfo(name = "posterUrl") var posterUrl: String,
-    @ColumnInfo(name = "watched") var watched: Boolean = false,
+    val title: String,
+    var posterUrl: String,
+    var watched: Boolean = false,
+
+    @ColumnInfo(defaultValue = "Movie") val resultType: MovieType = MovieType.Movie,
 
     /**
      * Defaults to -1 when no rating has been added
      */
-    @ColumnInfo(name = "rating") var rating: Int = -1,
-    @ColumnInfo(name = "notes") var notes: String = ""
+    var rating: Int = -1,
+    var notes: String = ""
 ): Serializable
