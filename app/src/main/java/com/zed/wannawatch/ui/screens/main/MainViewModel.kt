@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.zed.wannawatch.services.HomeScreenWatchedFilter
 import com.zed.wannawatch.services.MovieRatingFilter
 import com.zed.wannawatch.services.models.Movie
+import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.services.repository.MovieRepository
 
 // todo rename to HomeViewModel
@@ -28,6 +29,12 @@ class MainViewModel(private val repository: MovieRepository): ViewModel() {
             result
         }.filter {
             it.rating >= rating.ratingValue
+        }
+    }
+
+    fun filterResultsToType(results: List<Movie>, type: MovieType): List<Movie> {
+        return results.filter {
+            it.resultType == type
         }
     }
 
