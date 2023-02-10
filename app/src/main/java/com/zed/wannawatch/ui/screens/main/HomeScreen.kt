@@ -1,15 +1,9 @@
 package com.zed.wannawatch.ui.screens.main
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
-import androidx.compose.foundation.layout.Arrangement.SpaceEvenly
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.Check
@@ -18,9 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +22,7 @@ import com.zed.wannawatch.R
 import com.zed.wannawatch.services.HomeScreenWatchedFilter
 import com.zed.wannawatch.services.MovieRatingFilter
 import com.zed.wannawatch.services.models.Movie
+import com.zed.wannawatch.services.models.MovieType
 
 
 @Composable
@@ -47,10 +40,15 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
 
     val listState = rememberLazyGridState()
 
+
     val expandedFabState = remember {
         derivedStateOf {
             listState.firstVisibleItemIndex == 0
         }
+    }
+
+    LaunchedEffect(expandedFabState.value) {
+        viewModel.fabExpanded.value = expandedFabState.value
     }
 
     Box () {
@@ -62,17 +60,16 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-
                 // filter movies by watched/unwatched status
                 Box(){
                     Button(
-                        border = BorderStroke(1.5.dp, Color.Black),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black),
+                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                         onClick = {
                             watchedFilterExpanded = true
                         }
                     ) {
-                        Text(text = "filter by watched")
+                        Text(text = "filter by watched", color = Color.White)
                         Icon(Icons.Rounded.ArrowDropDown, contentDescription = "drop down arrow")
                     }
 
@@ -103,13 +100,13 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
                 // filter movies by rating
                 Box(){
                     Button(
-                        border = BorderStroke(1.5.dp, Color.Black),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black),
+                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                         onClick = {
                             ratingFilterExpanded = true
                         }
                     ) {
-                        Text(text = "filter by rating")
+                        Text(text = "filter by rating", color = Color.White)
                         Icon(Icons.Rounded.ArrowDropDown, contentDescription = "drop down arrow")
                     }
 
@@ -144,27 +141,33 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
 
             //
             if(movies?.isEmpty() == true) {
-                Text(text = "No movies added", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize())
+                Text(text = "No movies or tv-shows added", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize())
             } else {
-
+                // filters results to
                 val filteredMovies = viewModel.filterMovies(movies ?: listOf(), ratingFilterValue, watchedFilterStatus)
+                val moviesOnly = viewModel.filterResultsToType(filteredMovies, MovieType.Movie)
+                val seriesOnly = viewModel.filterResultsToType(filteredMovies, MovieType.Series)
 
-                LazyVerticalGrid(
-                    state = listState,
-                    userScrollEnabled = true ,
-                    contentPadding = PaddingValues(vertical = 10.dp),
-                    modifier = Modifier.fillMaxSize(),
-                    columns = GridCells.Adaptive(minSize = 128.dp)
-                ) {
-                    items(filteredMovies.size) {
-                        GridItem(watched = filteredMovies[it].watched,
-                            posterUrl = filteredMovies[it].posterUrl,
-                            onclick = {
-                                movieClicked(filteredMovies[it])
-                        })
+                ResultsGrid(
+                    movieItems = moviesOnly,
+                    tvshowItems = seriesOnly,
+                    listState = listState,
+                    onclick = movieClicked
+                )
+//                if(moviesOnly.isNotEmpty()) {
+//                    // todo make text a header
+//                    Text("Movies")
+//                    // todo add horizontal line
+//                    ResultsGrid(resultItems = moviesOnly, listState = movieListState, onclick = movieClicked)
+//                }
+//
+//                if(seriesOnly.isNotEmpty()) {
+//                    Text("TV Shows")
+//                    ResultsGrid(resultItems = seriesOnly, listState = tvshowListState, onclick = movieClicked)
+//                }
+//
 
-                    }
-                }
+
 
             }
         }
@@ -176,9 +179,52 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
             .padding(20.dp),
             expanded = viewModel.fabExpanded.value
         ) {
-            Log.i("com.zed.wannawatch", "Search fab clicked")
             searchClicked()
         }
+    }
+}
+
+@Composable
+fun ResultsGrid(movieItems: List<Movie>, tvshowItems: List<Movie>, listState: LazyGridState, onclick: (Movie) -> Unit) {
+    LazyVerticalGrid(
+        state = listState,
+        userScrollEnabled = true ,
+        contentPadding = PaddingValues(vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.fillMaxSize(),
+//                    columns = GridCells.Adaptive( = 128.dp)
+        columns = GridCells.Fixed(3)
+    ) {
+        if(movieItems.isNotEmpty()) {
+            item(span = { GridItemSpan(this.maxLineSpan) } ) {
+                SectionHeader("Movies")
+            }
+
+            items(movieItems.size) {
+                GridItem(watched = movieItems[it].watched,
+                    posterUrl = movieItems[it].posterUrl,
+                    onclick = {
+                        onclick(movieItems[it])
+                    })
+
+            }
+        }
+
+        if (tvshowItems.isNotEmpty()) {
+            item(span = { GridItemSpan(this.maxLineSpan) } ){
+                SectionHeader("Tv Shows")
+            }
+
+            items(tvshowItems.size) {
+                GridItem(watched = tvshowItems[it].watched,
+                    posterUrl = tvshowItems[it].posterUrl,
+                    onclick = {
+                        onclick(tvshowItems[it])
+                    })
+
+            }
+        }
+
     }
 }
 
@@ -212,6 +258,20 @@ fun GridItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
 }
 
 @Composable
+fun SectionHeader(text: String) {
+    Column() {
+        Text(
+            text = text,
+            modifier = Modifier
+                .padding(start = 10.dp),
+            style = MaterialTheme.typography.headlineLarge
+        )
+        Divider(color = MaterialTheme.colorScheme.secondary, modifier = Modifier.padding(horizontal = 10.dp), thickness = 1.dp)
+    }
+
+}
+
+@Composable
 fun SearchFAB(modifier: Modifier, expanded: Boolean, onclick : () -> Unit) {
 
     ExtendedFloatingActionButton(
@@ -224,15 +284,6 @@ fun SearchFAB(modifier: Modifier, expanded: Boolean, onclick : () -> Unit) {
         },
         onClick = onclick,
         expanded = expanded,
-//        containerColor = colors.secondaryVariant,
     )
-
-
-//    FloatingActionButton(
-//        modifier = modifier,
-//        onClick = onclick,
-//    ) {
-//        Icon(Icons.Rounded.Search, contentDescription = "Search FAB")
-//    }
 
 }
