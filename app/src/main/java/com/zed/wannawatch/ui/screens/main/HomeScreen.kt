@@ -154,21 +154,6 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
                     listState = listState,
                     onclick = movieClicked
                 )
-//                if(moviesOnly.isNotEmpty()) {
-//                    // todo make text a header
-//                    Text("Movies")
-//                    // todo add horizontal line
-//                    ResultsGrid(resultItems = moviesOnly, listState = movieListState, onclick = movieClicked)
-//                }
-//
-//                if(seriesOnly.isNotEmpty()) {
-//                    Text("TV Shows")
-//                    ResultsGrid(resultItems = seriesOnly, listState = tvshowListState, onclick = movieClicked)
-//                }
-//
-
-
-
             }
         }
 
@@ -232,11 +217,13 @@ fun ResultsGrid(movieItems: List<Movie>, tvshowItems: List<Movie>, listState: La
 @Composable
 fun GridItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
 
-    Box(modifier = Modifier
+    Box(
+        modifier = Modifier
         .width(128.dp)
         .clickable {
             onclick()
-        }) {
+        }
+    ) {
 
         AsyncImage(model = posterUrl,
             contentDescription = "movie poster image",
@@ -264,7 +251,8 @@ fun SectionHeader(text: String) {
             text = text,
             modifier = Modifier
                 .padding(start = 10.dp),
-            style = MaterialTheme.typography.headlineLarge
+            style = MaterialTheme.typography.headlineLarge,
+            color = MaterialTheme.colorScheme.secondary
         )
         Divider(color = MaterialTheme.colorScheme.secondary, modifier = Modifier.padding(horizontal = 10.dp), thickness = 1.dp)
     }
