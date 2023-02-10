@@ -1,17 +1,11 @@
 package com.zed.wannawatch.ui.screens.detail
 
 import android.util.Log
-import android.widget.EditText
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -19,20 +13,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.zed.wannawatch.R
-import com.zed.wannawatch.services.models.Movie
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zed.wannawatch.services.MovieApplication
+import com.zed.wannawatch.services.models.Movie
 
 
 @Composable
 fun DetailScreen(
     movieModel : Movie,
+
     viewModel: DetailViewModel = viewModel(factory = DetailViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository, movieModel))
 ) {
 
@@ -54,17 +47,39 @@ fun DetailScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Unit, onNotesChanged: (String) -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
+
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())) {
         AsyncImage(model = movie.posterUrl, contentDescription = null, modifier = Modifier
             .align(CenterHorizontally)
             .padding(20.dp))
 
-        Text(movie.title, fontSize = 20.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+        Text(movie.title, fontSize = 20.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), color = Color.White)
 
         Button(
             shape = RoundedCornerShape(10.dp),
             onClick = {
                 watchedToggle()
+            },
+
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(40.dp, 15.dp)
+                .align(CenterHorizontally)
+
+
+        ) {
+            Text(text = if(movie.watched) "unwatch" else "watched")
+        }
+
+        Button(
+            shape = RoundedCornerShape(10.dp),
+            onClick = {
+                // TODO open webview with lookmovie
+                // url= {base}/movies/view/{imdbId}-{movie name}-{year}
+                // where imdbID is stripped of 'tt' prefix and any spaces in movie name
+                // are replaced with dashes
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,7 +87,7 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
                 .align(CenterHorizontally)
 
         ) {
-            Text(text = if(movie.watched) "unwatch" else "watched")
+            Text(text = "Watch Online")
         }
 
         RatingRow(
@@ -80,12 +95,15 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
             onClick = { ratingValue ->
                 Log.i("com.zed.wannawatch", "rating onclick: $ratingValue")
                 ratingOnClick(ratingValue)
-            })
+            }
+        )
 
         Text("Movie Notes",
             fontSize = 20.sp ,
             textAlign = TextAlign.Left ,
-            modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp, 0.dp)
         )
 
         OutlinedTextField(
@@ -112,7 +130,8 @@ fun RatingRow(currRating: Int, onClick: (Int) -> Unit) {
     Row(modifier = Modifier
         .fillMaxWidth()
         .padding(bottom = 20.dp)
-        .horizontalScroll(rememberScrollState()
+        .horizontalScroll(
+            rememberScrollState()
         )
     ) {
         RatingIcon(
@@ -155,17 +174,17 @@ fun RatingIcon(iconId: Int, selected: Boolean, onClick: () -> Unit) {
     )
 }
 
-@Preview
-@Composable
-fun DetailsPreview() {
-    Surface(modifier = Modifier.background(Color.White)) {
-        Details(
-            movie = Movie("", "Movie Title", "https://via.placeholder.com/150", rating = 2, watched = true, notes = "this is the notes"),
-            watchedToggle = {  },
-            ratingOnClick = { },
-            onNotesChanged = { }
-        )
-    }
-
-}
+//@Preview
+//@Composable
+//fun DetailsPreview() {
+//    Surface(modifier = Modifier.background(Color.White)) {
+//        Details(
+//            movie = Movie("", "Movie Title", "https://via.placeholder.com/150", rating = 2, watched = true, notes = "this is the notes"),
+//            watchedToggle = {  },
+//            ratingOnClick = { },
+//            onNotesChanged = { }
+//        )
+//    }
+//
+//}
 
