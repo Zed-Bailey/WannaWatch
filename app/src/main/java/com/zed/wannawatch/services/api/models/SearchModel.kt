@@ -11,6 +11,14 @@ data class SearchData(
 data class SearchResult(
     @SerializedName("Title") var Title: String,
     @SerializedName("Year") var Year: String,
+    @SerializedName("Poster") var Poster: String,
+    @SerializedName("imdbID") var imdbID: String,
+    @SerializedName("Type") var Type: String,
+) : Serializable
+
+data class SearchDetail(
+    @SerializedName("Title") var Title: String,
+    @SerializedName("Year") var Year: String,
     @SerializedName("Rated") var Rated: String,
     @SerializedName("Released") var Released: String,
     @SerializedName("Runtime") var Runtime: String,
@@ -23,7 +31,7 @@ data class SearchResult(
     @SerializedName("Country") var Country: String,
     @SerializedName("Awards") var Awards: String,
     @SerializedName("Poster") var Poster: String,
-    @SerializedName("Ratings") var Ratings: ArrayList<String> = arrayListOf(),
+    @SerializedName("Ratings") var Ratings: ArrayList<MediaRating> = arrayListOf(),
     @SerializedName("Metascore") var Metascore: String,
     @SerializedName("imdbRating") var imdbRating: String,
     @SerializedName("imdbVotes") var imdbVotes: String,
@@ -34,4 +42,9 @@ data class SearchResult(
     @SerializedName("Production") var Production: String,
     @SerializedName("Website") var Website: String,
     @SerializedName("Response") var Response: String
-) : Serializable
+)
+
+data class MediaRating (
+    @SerializedName("Source") var source: String,
+    @SerializedName("Value") var value: String
+): Serializable {}
