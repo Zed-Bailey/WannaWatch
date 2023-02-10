@@ -12,7 +12,7 @@ data class Movie(
     var posterUrl: String,
     var watched: Boolean = false,
 
-    @ColumnInfo(defaultValue = "Movie") val resultType: MovieType = MovieType.Movie,
+    @ColumnInfo(defaultValue = "Movie") val resultType: MovieType,
 
     /**
      * Defaults to -1 when no rating has been added
