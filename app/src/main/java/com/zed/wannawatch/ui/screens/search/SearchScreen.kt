@@ -1,6 +1,6 @@
 package com.zed.wannawatch.ui.screens.search
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,16 +22,25 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import com.zed.wannawatch.services.api.models.SearchDetail
+import com.zed.wannawatch.services.models.Movie
+import com.zed.wannawatch.services.models.MovieType
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchScreen(viewModel: SearchViewModel, itemClicked: () -> Unit) {
 
@@ -50,6 +59,10 @@ fun SearchScreen(viewModel: SearchViewModel, itemClicked: () -> Unit) {
 
     val detailResult by viewModel.detailResult.observeAsState()
 
+    val detailLoading = viewModel.detailLoading.observeAsState().value
+    val focusManager = LocalFocusManager.current
+
+    val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -65,6 +78,9 @@ fun SearchScreen(viewModel: SearchViewModel, itemClicked: () -> Unit) {
             },
             onSearch = {
                 viewModel.search(searchString)
+
+                // close keyboard
+                focusManager.clearFocus()
             },
             clearIconOnClick = {
                 searchString = ""
@@ -76,13 +92,13 @@ fun SearchScreen(viewModel: SearchViewModel, itemClicked: () -> Unit) {
             // show skeleton loader
             LazyVerticalGrid(
                 contentPadding = PaddingValues(vertical = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
                 columns = GridCells.Fixed(3)
             ) {
                 items(20) {
                     Box(modifier = Modifier
                         .width(128.dp)
-                        .height(150.dp)
+                        .height(175.dp)
                         .shimmer()
                         .background(Color.Gray)
                     ) {}
@@ -118,7 +134,6 @@ fun SearchScreen(viewModel: SearchViewModel, itemClicked: () -> Unit) {
                             Box(modifier = Modifier
                                 .width(128.dp)
                                 .clickable {
-                                    Log.i("com.zed.wannawatch", "clicked ${results[it].Title}")
                                     dialogOpen = true
                                     viewModel.getDetail(results[it].imdbID)
                                 }) {
@@ -136,14 +151,29 @@ fun SearchScreen(viewModel: SearchViewModel, itemClicked: () -> Unit) {
 
         if(dialogOpen) {
             detailResult?.let {
-                Dialog(onDismissRequest = {
-                    dialogOpen = false
-
-                }) {
-                    SearchPopup(it) {
-                        Log.i("com.zed.wannawatch", "will add ${it.Title} for you")
+                Dialog(
+                    // dialog doesn't change shape based on dynamic content in recomposition
+                    // known bug and can be fixed with the usePlatformDefaultWidth value  in dialog properties
+                    // https://issuetracker.google.com/issues/221643630#comment9
+                    // https://stackoverflow.com/a/72018943
+                    properties = DialogProperties(usePlatformDefaultWidth = false),
+                    onDismissRequest = {
                         dialogOpen = false
                     }
+                ) {
+                    SearchPopup(it, detailLoading = detailLoading) {
+                        viewModel.addMovie(
+                            Movie(
+                                imdbID = it.imdbID,
+                                title = it.Title,
+                                posterUrl = it.Poster,
+                                resultType = if(it.Type == "Movie") MovieType.Movie else MovieType.Series,
+                            )
+                        )
+                        dialogOpen = false
+                        Toast.makeText(context, "Added Movie", Toast.LENGTH_SHORT).show()
+                    }
+                    
                 }
             }
 
@@ -182,67 +212,105 @@ fun SearchField(searchString: String, showClearIcon: Boolean, modifier: Modifier
 }
 
 @Composable
-fun SearchPopup(selectedResult: SearchDetail, onAdd: () -> Unit) {
+fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: () -> Unit) {
     // crashing on this line
     val genres = selectedResult.Genre.split(",")
 
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = Modifier
+        .padding(20.dp)
+        .fillMaxWidth()
+    ) {
         Column(modifier = Modifier
-            .fillMaxWidth()
             .padding(20.dp)
+            .fillMaxWidth()
         ) {
-            AsyncImage(
-                model = selectedResult.Poster,
-                contentDescription = "poster image for ${selectedResult.Title}",
-                modifier = Modifier
-                    .width(128.dp)
-                    .height(170.dp)
-                    .align(CenterHorizontally)
-            )
+            
+            if(detailLoading == true) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .shimmer()
+                ) {
+                    Box(modifier = Modifier
+                        .width(128.dp)
+                        .height(170.dp)
+                        .background(Color.Gray)
+                        .align(CenterHorizontally)
+                    )
 
+                    Box(modifier = Modifier.height(15.dp).padding(10.dp).background(Color.Gray).align(CenterHorizontally))
 
-            Text(selectedResult.Title,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier
-                    .align(CenterHorizontally)
-                    .padding(vertical = 10.dp)
-            )
-
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp),
-            ) {
-                Text("${selectedResult.Runtime} watch time")
-                Spacer(modifier = Modifier.height(5.dp))
-                LazyRow() {
-                    items(genres.size) {
-                        Text(
-                            genres[it],
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier
-                                .padding(end = 5.dp)
-                                .border(
-                                    BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                                    RoundedCornerShape(5.dp)
-                                )
-                                .padding(horizontal = 8.dp, vertical = 2.5.dp)
-                        )
-                    }
+                    Box(modifier = Modifier.height(60.dp).padding(10.dp).background(Color.Gray))
                 }
             }
+            else {
+                AsyncImage(
+                    model = selectedResult.Poster,
+                    contentDescription = "poster image for ${selectedResult.Title}",
+                    modifier = Modifier
+                        .width(128.dp)
+                        .height(170.dp)
+                        .align(CenterHorizontally)
+                )
 
-            Text(selectedResult.Plot, style = MaterialTheme.typography.bodyMedium)
-            
-            Button(
-                onClick = onAdd,
-                modifier = Modifier
-                    .padding(top = 20.dp)
-                    .align(CenterHorizontally)
-            ) {
-                Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(ButtonDefaults.IconSize))
-                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "I Wanna Watch!")
+
+                Text(selectedResult.Title,
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp)
+                )
+
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp),
+                ) {
+
+                    Text(selectedResult.Type, fontWeight = FontWeight.Bold)
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    Text(
+                        if(selectedResult.Runtime != "N/A")
+                            "${selectedResult.Runtime} watch time"
+                        else
+                            "Watch time unavailable"
+                    )
+
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    LazyRow() {
+                        items(genres.size) {
+                            Text(
+                                genres[it],
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier
+                                    .padding(end = 5.dp)
+                                    .border(
+                                        BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                                        RoundedCornerShape(5.dp)
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 2.5.dp)
+                            )
+                        }
+                    }
+                }
+
+                Text(selectedResult.Plot, style = MaterialTheme.typography.bodyMedium)
+
+                Button(
+                    onClick = onAdd,
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .align(CenterHorizontally)
+                ) {
+                    Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(ButtonDefaults.IconSize))
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(text = "I Wanna Watch!")
+                }
             }
+            
 
         }
 

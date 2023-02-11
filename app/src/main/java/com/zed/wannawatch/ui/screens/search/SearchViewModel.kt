@@ -29,7 +29,7 @@ class SearchViewModel(private val repository: MovieRepository): ViewModel() {
         private set
 
     var detailResult = MutableLiveData<SearchDetail>()
-
+    var detailLoading = MutableLiveData<Boolean>(false)
 
     fun search(query: String) {
         loading = true
@@ -46,6 +46,7 @@ class SearchViewModel(private val repository: MovieRepository): ViewModel() {
     }
 
     fun getDetail(imdbId: String) {
+        detailLoading.value = true
         viewModelScope.launch {
             val result = apiRepository.searchDetail(imdbId)
             result.fold(onSuccess = { data ->
@@ -54,6 +55,8 @@ class SearchViewModel(private val repository: MovieRepository): ViewModel() {
                 Log.e("SearchViewModel", "failed to get detail :(")
                 error = true
             })
+
+            detailLoading.value = false
         }
     }
 
