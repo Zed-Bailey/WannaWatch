@@ -28,7 +28,10 @@ class MainViewModel(private val repository: MovieRepository): ViewModel() {
 
             result
         }.filter {
-            it.rating >= rating.ratingValue
+            if(rating == MovieRatingFilter.All)
+                true
+            else
+                it.rating == rating.ratingValue
         }
     }
 
