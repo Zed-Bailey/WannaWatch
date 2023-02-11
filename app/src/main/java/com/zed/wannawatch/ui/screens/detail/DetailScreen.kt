@@ -10,23 +10,20 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.zed.wannawatch.R
-import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.models.Movie
+import com.zed.wannawatch.services.models.MovieType
 
 
 @Composable
 fun DetailScreen(
-    movieModel : Movie,
-
-    viewModel: DetailViewModel = viewModel(factory = DetailViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository, movieModel))
+    viewModel: DetailViewModel
 ) {
 
     val movieState by viewModel.movieState.collectAsState()
@@ -174,17 +171,17 @@ fun RatingIcon(iconId: Int, selected: Boolean, onClick: () -> Unit) {
     )
 }
 
-//@Preview
-//@Composable
-//fun DetailsPreview() {
-//    Surface(modifier = Modifier.background(Color.White)) {
-//        Details(
-//            movie = Movie("", "Movie Title", "https://via.placeholder.com/150", rating = 2, watched = true, notes = "this is the notes"),
-//            watchedToggle = {  },
-//            ratingOnClick = { },
-//            onNotesChanged = { }
-//        )
-//    }
-//
-//}
+@Preview
+@Composable
+fun DetailsPreview() {
+    Surface(modifier = Modifier.background(Color.White)) {
+        Details(
+            movie = Movie("", "Movie Title", "https://via.placeholder.com/150", rating = 2, watched = true, notes = "this is the notes", resultType = MovieType.Movie),
+            watchedToggle = {  },
+            ratingOnClick = { },
+            onNotesChanged = { }
+        )
+    }
+
+}
 

@@ -3,21 +3,24 @@ package com.zed.wannawatch.ui.screens.detail
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.zed.wannawatch.R
+import com.zed.wannawatch.services.MovieApplication
 
 //https://developer.android.com/guide/navigation/navigation-pass-data#Safe-args
 
 class DetailFragment : Fragment() {
 
     private val args: DetailFragmentArgs by navArgs()
-
-
+    private val viewModel: DetailViewModel by viewModels {
+        DetailViewModelFactory((requireActivity().application as MovieApplication).repository, args.movie.copy())
+    }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.detail_options_menu, menu)
@@ -49,7 +52,7 @@ class DetailFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                DetailScreen(args.movie.copy())
+                DetailScreen(viewModel = viewModel)
             }
         }
     }
@@ -63,7 +66,7 @@ class DetailFragment : Fragment() {
         builder.setMessage("Are you sure you want to delete this movie?")
 
         builder.setPositiveButton("Yes") { _, _ ->
-//            viewModel.delete(data)
+            viewModel.delete(args.movie)
             Toast.makeText(requireContext(), "Deleted Movie", Toast.LENGTH_SHORT).show()
 
             // navigate back home

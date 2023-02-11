@@ -1,11 +1,5 @@
 package com.zed.wannawatch.ui.screens.detail
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -55,7 +49,7 @@ class DetailViewModel(private val repository: MovieRepository, private val movie
         repository.updateMovie(movie)
     }
 
-    private fun delete(movie: Movie) = viewModelScope.launch {
+    fun delete(movie: Movie) = viewModelScope.launch {
         repository.deleteMovie(movie)
     }
 }
