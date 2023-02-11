@@ -112,6 +112,7 @@ fun SearchScreen(viewModel: SearchViewModel, itemClicked: () -> Unit) {
                 apiResults?.let { results ->
                     Text (
                         "${results.size} results",
+                        color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -167,7 +168,7 @@ fun SearchScreen(viewModel: SearchViewModel, itemClicked: () -> Unit) {
                                 imdbID = it.imdbID,
                                 title = it.Title,
                                 posterUrl = it.Poster,
-                                resultType = if(it.Type == "Movie") MovieType.Movie else MovieType.Series,
+                                resultType = if(it.Type == "movie") MovieType.Movie else MovieType.Series,
                             )
                         )
                         dialogOpen = false
@@ -189,6 +190,7 @@ fun SearchScreen(viewModel: SearchViewModel, itemClicked: () -> Unit) {
 @Composable
 fun SearchField(searchString: String, showClearIcon: Boolean, modifier: Modifier, onChange: (String) -> Unit, onSearch: (KeyboardActionScope) -> Unit, clearIconOnClick: () -> Unit) {
     OutlinedTextField(
+        colors = TextFieldDefaults.outlinedTextFieldColors(textColor = MaterialTheme.colorScheme.primary) ,
         placeholder = { Text("Search for a movie or show") },
         modifier = modifier,
         value = searchString,
@@ -237,9 +239,16 @@ fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: ()
                         .align(CenterHorizontally)
                     )
 
-                    Box(modifier = Modifier.height(15.dp).padding(10.dp).background(Color.Gray).align(CenterHorizontally))
+                    Box(modifier = Modifier
+                        .height(15.dp)
+                        .padding(10.dp)
+                        .background(Color.Gray)
+                        .align(CenterHorizontally))
 
-                    Box(modifier = Modifier.height(60.dp).padding(10.dp).background(Color.Gray))
+                    Box(modifier = Modifier
+                        .height(60.dp)
+                        .padding(10.dp)
+                        .background(Color.Gray))
                 }
             }
             else {
