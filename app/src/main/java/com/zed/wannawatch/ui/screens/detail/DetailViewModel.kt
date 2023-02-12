@@ -4,18 +4,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.zed.wannawatch.services.models.Movie
+import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.services.repository.MovieRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class DetailViewModel(private val repository: MovieRepository, private val movieModel: Movie): ViewModel() {
+class DetailViewModel(private val repository: MovieRepository, private val movieId: String): ViewModel() {
+//    private val movieModel: Movie
 
-
-    private val _movieState = MutableStateFlow(movieModel)
+    private val _movieState = MutableStateFlow(Movie("","","", resultType = MovieType.Movie))
     val movieState = _movieState.asStateFlow()
 
+
+    init {
+        getMovie(movieId)
+    }
 
     fun toggleWatched() {
         _movieState.update {
@@ -45,6 +50,15 @@ class DetailViewModel(private val repository: MovieRepository, private val movie
         update(_movieState.value)
     }
 
+    private fun getMovie(id: String) = viewModelScope.launch {
+        val movie = repository.getMovie(id)
+        movie.collect {flow ->
+            _movieState.update {
+                flow
+            }
+        }
+    }
+
     private fun update(movie: Movie) = viewModelScope.launch{
         repository.updateMovie(movie)
     }
@@ -54,11 +68,11 @@ class DetailViewModel(private val repository: MovieRepository, private val movie
     }
 }
 
-class DetailViewModelFactory(private val repository: MovieRepository, private val movie: Movie) : ViewModelProvider.Factory {
+class DetailViewModelFactory(private val repository: MovieRepository, private val movieId: String) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DetailViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return DetailViewModel(repository, movie) as T
+            return DetailViewModel(repository, movieId) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

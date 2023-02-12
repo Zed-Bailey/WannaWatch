@@ -20,6 +20,12 @@ class MovieRepository(private val movieDAO: MovieDAO) {
     }
 
     @WorkerThread
+    @Suppress("RedundantSuspendModifier")
+    suspend fun getMovie(id: String): Flow<Movie> {
+        return movieDAO.getMovie(id)
+    }
+
+    @WorkerThread
     suspend fun deleteMovie(movie: Movie) {
         movieDAO.deleteMovie(movie)
     }

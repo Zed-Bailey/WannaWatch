@@ -34,15 +34,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
+import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.api.models.SearchDetail
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchScreen(viewModel: SearchViewModel, itemClicked: () -> Unit) {
+fun SearchScreen(
+    viewModel: SearchViewModel = viewModel(
+        factory = SearchViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository)
+    )
+) {
 
     var searchString by remember  {
         mutableStateOf("")

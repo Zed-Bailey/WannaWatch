@@ -10,25 +10,33 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.zed.wannawatch.R
 import com.zed.wannawatch.services.HomeScreenWatchedFilter
+import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.MovieRatingFilter
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
 
 
 @Composable
-fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchClicked: () -> Unit) {
+fun HomeScreen(
+    viewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository)
+    ),
+    movieClicked: (Movie) -> Unit,
+    searchClicked: () -> Unit
+) {
 
-    val movies by viewModel.movies.observeAsState()
+    val movies by viewModel.movies.collectAsState(initial = listOf())
 
     var watchedFilterStatus by remember { mutableStateOf(HomeScreenWatchedFilter.All) }
     val watchedFilterOptions = listOf(HomeScreenWatchedFilter.All, HomeScreenWatchedFilter.Watched, HomeScreenWatchedFilter.Unwatched)
@@ -139,12 +147,13 @@ fun HomeScreen(viewModel: MainViewModel, movieClicked: (Movie) -> Unit, searchCl
                 }
             }
 
+
             //
-            if(movies?.isEmpty() == true) {
+            if(movies.isEmpty()) {
                 Text(text = "No movies or tv-shows added", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize())
             } else {
                 // filters results to
-                val filteredMovies = viewModel.filterMovies(movies ?: listOf(), ratingFilterValue, watchedFilterStatus)
+                val filteredMovies = viewModel.filterMovies(movies, ratingFilterValue, watchedFilterStatus)
                 val moviesOnly = viewModel.filterResultsToType(filteredMovies, MovieType.Movie)
                 val seriesOnly = viewModel.filterResultsToType(filteredMovies, MovieType.Series)
 
@@ -219,10 +228,10 @@ fun GridItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
 
     Box(
         modifier = Modifier
-        .width(128.dp)
-        .clickable {
-            onclick()
-        }
+            .width(128.dp)
+            .clickable {
+                onclick()
+            }
     ) {
 
         AsyncImage(model = posterUrl,

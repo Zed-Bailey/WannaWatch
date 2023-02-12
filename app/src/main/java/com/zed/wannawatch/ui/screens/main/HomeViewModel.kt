@@ -1,19 +1,18 @@
 package com.zed.wannawatch.ui.screens.main
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.zed.wannawatch.services.HomeScreenWatchedFilter
 import com.zed.wannawatch.services.MovieRatingFilter
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.services.repository.MovieRepository
 
-// todo rename to HomeViewModel
-class MainViewModel(private val repository: MovieRepository): ViewModel() {
+class HomeViewModel(private val repository: MovieRepository): ViewModel() {
 
 
-    val movies: LiveData<List<Movie>> = repository.allMovies.asLiveData()
-
+    val movies = repository.allMovies
     val fabExpanded = mutableStateOf(true)
 
     fun filterMovies(movies: List<Movie>, rating: MovieRatingFilter, watchedFilter: HomeScreenWatchedFilter): List<Movie> {
@@ -43,11 +42,11 @@ class MainViewModel(private val repository: MovieRepository): ViewModel() {
 
 }
 //https://developer.android.com/codelabs/android-room-with-a-view-kotlin#9
-class MainViewModelFactory(private val repository: MovieRepository) : ViewModelProvider.Factory {
+class HomeViewModelFactory(private val repository: MovieRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return MainViewModel(repository) as T
+            return HomeViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
