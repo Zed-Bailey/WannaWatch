@@ -1,5 +1,6 @@
 package com.zed.wannawatch.ui.screens.detail
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,14 +17,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.zed.wannawatch.R
 import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
+import com.zed.wannawatch.ui.ScaffoldState
+import com.zed.wannawatch.ui.WannaWatchScaffold
 
 @Composable
 fun DetailScreen(
+    navController: NavController,
     movieId: String,
     viewModel: DetailViewModel = viewModel(
         factory = DetailViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository, movieId)
@@ -33,12 +38,29 @@ fun DetailScreen(
     val movieState by viewModel.movieState.collectAsState()
 
 
-    Details(
-        movie = movieState,
-        watchedToggle = { viewModel.toggleWatched() },
-        ratingOnClick = { viewModel.updateRating(it) },
-        onNotesChanged = { viewModel.updateNotesText(it) }
-    )
+    WannaWatchScaffold(
+        scaffoldState = ScaffoldState(
+            shouldShowBack = true,
+            shouldShowDelete = true,
+            onBackPressed = {
+                navController.navigateUp()
+            },
+            onDeletePressed = {
+                Log.i("com.zed.wannawatch", "delete pressed")
+                viewModel.delete()
+
+                navController.popBackStack()
+            }
+        )
+    ) {
+        Details(
+            movie = movieState,
+            watchedToggle = { viewModel.toggleWatched() },
+            ratingOnClick = { viewModel.updateRating(it) },
+            onNotesChanged = { viewModel.updateNotesText(it) }
+        )
+    }
+
 
 
 }
@@ -51,7 +73,6 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
 
     Column(modifier = Modifier
         .fillMaxSize()
-        .padding(top = 20.dp)
         .verticalScroll(rememberScrollState())
     ) {
         AsyncImage(model = movie.posterUrl, contentDescription = null,

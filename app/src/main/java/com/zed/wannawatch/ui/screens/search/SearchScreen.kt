@@ -28,18 +28,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
+import com.zed.wannawatch.ui.ScaffoldState
+import com.zed.wannawatch.ui.WannaWatchScaffold
 
-@OptIn(ExperimentalComposeUiApi::class)
+
 @Composable
 fun SearchScreen(
+    navController: NavController,
     viewModel: SearchViewModel = viewModel(
         factory = SearchViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository)
     )
+) {
+    // todo: wannawatch text not centered when only back button
+    WannaWatchScaffold(
+        scaffoldState = ScaffoldState(
+            shouldShowBack = true,
+            onBackPressed = {
+                navController.navigateUp()
+            }
+        )
+    ) {
+        Search(viewModel = viewModel)
+    }
+}
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun Search(
+   viewModel: SearchViewModel
 ) {
 
     var searchString by remember  {

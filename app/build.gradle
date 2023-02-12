@@ -97,7 +97,10 @@ dependencies {
 
     // == end jetpack compose dependencies==
 
+    // all the material icons
+    implementation "androidx.compose.material:material-icons-extended"
 
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.28.0"
     // Room Database
     def room_version = "2.5.0"
 

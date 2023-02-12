@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.zed.wannawatch.services.HomeScreenWatchedFilter
+import com.zed.wannawatch.services.MediaTypeFilter
 import com.zed.wannawatch.services.MovieRatingFilter
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
@@ -15,7 +16,7 @@ class HomeViewModel(private val repository: MovieRepository): ViewModel() {
     val movies = repository.allMovies
     val fabExpanded = mutableStateOf(true)
 
-    fun filterMovies(movies: List<Movie>, rating: MovieRatingFilter, watchedFilter: HomeScreenWatchedFilter): List<Movie> {
+    fun filterMovies(movies: List<Movie>, rating: MovieRatingFilter, watchedFilter: HomeScreenWatchedFilter, type: MediaTypeFilter): List<Movie> {
 
         return movies.filter {
 
@@ -31,6 +32,12 @@ class HomeViewModel(private val repository: MovieRepository): ViewModel() {
                 true
             else
                 it.rating == rating.ratingValue
+        }.filter {
+            // when type is null then return all results
+            if(type.type == null)
+                true
+            else
+                it.resultType == type.type
         }
     }
 

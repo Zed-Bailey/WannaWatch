@@ -1,14 +1,8 @@
 package com.zed.wannawatch.ui.navigation
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -24,59 +18,12 @@ import com.zed.wannawatch.ui.screens.search.SearchScreen
 fun Navigation() {
     val navController = rememberNavController()
 
-    // navigation icon not recomposing solved with ths help of this answer
-    // https://stackoverflow.com/a/68700967
-    var canPop by remember { mutableStateOf(false) }
-
-    DisposableEffect(navController) {
-        val listener = NavController.OnDestinationChangedListener { controller, _, _ ->
-            canPop = controller.previousBackStackEntry != null
-        }
-        navController.addOnDestinationChangedListener(listener)
-        onDispose {
-            navController.removeOnDestinationChangedListener(listener)
-        }
+    Surface(
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        NavigationHost(navController = navController)
     }
 
-
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(text = "WannaWatch", fontWeight = FontWeight.Bold)
-                },
-
-                navigationIcon = {
-                    if (canPop) {
-                        IconButton(onClick = { navController.navigateUp() }) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
-                        }
-
-                    } else {
-                        null
-                    }
-                },
-                actions =  {
-                    if(navController.currentDestination?.route == Screen.DetailScreen.route) {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(Icons.Rounded.Delete, contentDescription = null)
-                        }
-                    }
-                }
-
-            )
-        },
-
-
-    ){
-
-        Box(modifier = Modifier.padding(it)) {
-            NavigationHost(navController = navController)
-        }
-    }
 
 }
 
@@ -90,14 +37,7 @@ fun NavigationHost(navController: NavHostController) {
 
         // MARK: home screen
         composable(route = Screen.HomeScreen.route) {
-            HomeScreen(
-                movieClicked = {
-                    navController.navigate(Screen.DetailScreen.route + "/${it}")
-                },
-                searchClicked = {
-                    navController.navigate(Screen.SearchScreen.route)
-                }
-            )
+            HomeScreen(navController)
         }
 
         // MARK: detail screen
@@ -110,14 +50,18 @@ fun NavigationHost(navController: NavHostController) {
                 }
             )
         ){
-            DetailScreen(movieId = it.arguments?.getString("movieId")!!)
+            DetailScreen(
+                navController = navController,
+                // can be forced unwrapped as the argument should never be nullable
+                movieId = it.arguments?.getString("movieId")!!
+            )
         }
 
         // MARK: search screen
         composable(
             route = Screen.SearchScreen.route,
         ) {
-            SearchScreen()
+            SearchScreen(navController)
         }
     }
 }

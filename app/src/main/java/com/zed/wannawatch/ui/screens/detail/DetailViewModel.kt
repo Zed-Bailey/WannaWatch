@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DetailViewModel(private val repository: MovieRepository, private val movieId: String): ViewModel() {
-//    private val movieModel: Movie
 
     private val _movieState = MutableStateFlow(Movie("","","", resultType = MovieType.Movie))
     val movieState = _movieState.asStateFlow()
@@ -65,8 +64,14 @@ class DetailViewModel(private val repository: MovieRepository, private val movie
         repository.updateMovie(movie)
     }
 
-    fun delete(movie: Movie) = viewModelScope.launch {
-        repository.deleteMovie(movie)
+    fun delete() = viewModelScope.launch {
+
+        repository.deleteMovie(_movieState.value)
+        _movieState.update {
+
+            Movie("","","", resultType = MovieType.Movie)
+        }
+
     }
 }
 
