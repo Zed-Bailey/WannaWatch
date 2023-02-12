@@ -25,7 +25,9 @@ class DetailViewModel(private val repository: MovieRepository, private val movie
     fun toggleWatched() {
         _movieState.update {
             it.copy(
-                watched = !it.watched
+                watched = !it.watched,
+                rating = -1,
+                notes = ""
             )
         }
         // updates value in DB

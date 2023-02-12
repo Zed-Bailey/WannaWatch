@@ -1,6 +1,5 @@
 package com.zed.wannawatch.ui.screens.detail
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,13 +32,13 @@ fun DetailScreen(
 
     val movieState by viewModel.movieState.collectAsState()
 
+
     Details(
         movie = movieState,
         watchedToggle = { viewModel.toggleWatched() },
         ratingOnClick = { viewModel.updateRating(it) },
         onNotesChanged = { viewModel.updateNotesText(it) }
     )
-
 
 
 }
@@ -52,12 +51,20 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
 
     Column(modifier = Modifier
         .fillMaxSize()
-        .verticalScroll(rememberScrollState())) {
-        AsyncImage(model = movie.posterUrl, contentDescription = null, modifier = Modifier
-            .align(CenterHorizontally)
-            .padding(20.dp))
+        .padding(top = 20.dp)
+        .verticalScroll(rememberScrollState())
+    ) {
+        AsyncImage(model = movie.posterUrl, contentDescription = null,
+            modifier = Modifier
+                .align(CenterHorizontally)
+                .padding(horizontal = 20.dp)
+                .width(200.dp)
+                .aspectRatio(2f / 3f)
+        )
 
-        Text(movie.title, fontSize = 20.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), color = Color.White)
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Text(movie.title, style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primary)
 
         Button(
             shape = RoundedCornerShape(10.dp),
@@ -72,7 +79,7 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
 
 
         ) {
-            Text(text = if(movie.watched) "unwatch" else "watched")
+            Text(text = if(movie.watched) "Un-Watch" else "Watched", color = MaterialTheme.colorScheme.onPrimary)
         }
 
         Button(
@@ -89,37 +96,49 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
                 .align(CenterHorizontally)
 
         ) {
-            Text(text = "Watch Online")
+            Text(text = "Watch Online", color = MaterialTheme.colorScheme.onPrimary)
         }
 
         RatingRow(
             currRating = movie.rating,
             onClick = { ratingValue ->
-                Log.i("com.zed.wannawatch", "rating onclick: $ratingValue")
                 ratingOnClick(ratingValue)
             }
         )
 
-        Text("Movie Notes",
-            fontSize = 20.sp ,
-            textAlign = TextAlign.Left ,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp, 0.dp)
-        )
+        Card(
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
+            modifier = Modifier.padding(15.dp)
+        ) {
+            Spacer(modifier = Modifier.height(10.dp))
 
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(128.dp)
-                .padding(15.dp),
-            value = movie.notes,
-            onValueChange = { onNotesChanged(it) },
-            maxLines = 10,
-            placeholder = {
-                Text(text = "Write any notes here")
-            }
-        )
+            Text(
+                "Movie Notes",
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontSize = 20.sp ,
+                textAlign = TextAlign.Left ,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp, 0.dp)
+            )
+
+            OutlinedTextField(
+                colors = TextFieldDefaults.outlinedTextFieldColors(MaterialTheme.colorScheme.onPrimaryContainer),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(128.dp)
+                    .padding(15.dp),
+                value = movie.notes,
+                onValueChange = { onNotesChanged(it) },
+                maxLines = 10,
+                placeholder = {
+                    Text(text = "Write any notes here")
+                }
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+
     }
 }
 

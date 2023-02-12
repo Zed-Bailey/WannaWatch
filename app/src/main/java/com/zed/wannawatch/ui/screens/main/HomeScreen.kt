@@ -32,7 +32,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository)
     ),
-    movieClicked: (Movie) -> Unit,
+    movieClicked: (String) -> Unit,
     searchClicked: () -> Unit
 ) {
 
@@ -77,7 +77,7 @@ fun HomeScreen(
                             watchedFilterExpanded = true
                         }
                     ) {
-                        Text(text = "filter by watched", color = Color.White)
+                        Text(text = "filter by watched", color = MaterialTheme.colorScheme.primary)
                         Icon(Icons.Rounded.ArrowDropDown, contentDescription = "drop down arrow")
                     }
 
@@ -114,7 +114,7 @@ fun HomeScreen(
                             ratingFilterExpanded = true
                         }
                     ) {
-                        Text(text = "filter by rating", color = Color.White)
+                        Text(text = "filter by rating", color = MaterialTheme.colorScheme.primary)
                         Icon(Icons.Rounded.ArrowDropDown, contentDescription = "drop down arrow")
                     }
 
@@ -150,7 +150,7 @@ fun HomeScreen(
 
             //
             if(movies.isEmpty()) {
-                Text(text = "No movies or tv-shows added", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize())
+                Text(text = "No movies or tv-shows added", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize(),)
             } else {
                 // filters results to
                 val filteredMovies = viewModel.filterMovies(movies, ratingFilterValue, watchedFilterStatus)
@@ -161,7 +161,9 @@ fun HomeScreen(
                     movieItems = moviesOnly,
                     tvshowItems = seriesOnly,
                     listState = listState,
-                    onclick = movieClicked
+                    onclick = {
+                        movieClicked(it.imdbID)
+                    }
                 )
             }
         }
@@ -185,8 +187,8 @@ fun ResultsGrid(movieItems: List<Movie>, tvshowItems: List<Movie>, listState: La
         userScrollEnabled = true ,
         contentPadding = PaddingValues(vertical = 10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier.fillMaxSize(),
-//                    columns = GridCells.Adaptive( = 128.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.fillMaxSize().padding(5.dp),
         columns = GridCells.Fixed(3)
     ) {
         if(movieItems.isNotEmpty()) {
@@ -195,12 +197,13 @@ fun ResultsGrid(movieItems: List<Movie>, tvshowItems: List<Movie>, listState: La
             }
 
             items(movieItems.size) {
-                GridItem(watched = movieItems[it].watched,
+                GridItem(
+                    watched = movieItems[it].watched,
                     posterUrl = movieItems[it].posterUrl,
                     onclick = {
                         onclick(movieItems[it])
-                    })
-
+                    }
+                )
             }
         }
 
@@ -236,7 +239,9 @@ fun GridItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
 
         AsyncImage(model = posterUrl,
             contentDescription = "movie poster image",
-            modifier = Modifier.width(128.dp),
+            modifier = Modifier
+                .aspectRatio(2f/3f)
+                .width(128.dp)
         )
 
         if(watched) {
@@ -261,7 +266,7 @@ fun SectionHeader(text: String) {
             modifier = Modifier
                 .padding(start = 10.dp),
             style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.secondary
+            color = MaterialTheme.colorScheme.onSurface
         )
         Divider(color = MaterialTheme.colorScheme.secondary, modifier = Modifier.padding(horizontal = 10.dp), thickness = 1.dp)
     }

@@ -1,10 +1,14 @@
 package com.zed.wannawatch.ui.navigation
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,20 +23,57 @@ import com.zed.wannawatch.ui.screens.search.SearchScreen
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    
+
+    // navigation icon not recomposing solved with ths help of this answer
+    // https://stackoverflow.com/a/68700967
+    var canPop by remember { mutableStateOf(false) }
+
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { controller, _, _ ->
+            canPop = controller.previousBackStackEntry != null
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose {
+            navController.removeOnDestinationChangedListener(listener)
+        }
+    }
+
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(text = "WannaWatch", fontWeight = FontWeight.Bold)
+                },
+
+                navigationIcon = {
+                    if (canPop) {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+
+                    } else {
+                        null
+                    }
+                },
+                actions =  {
+                    if(navController.currentDestination?.route == Screen.DetailScreen.route) {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(Icons.Rounded.Delete, contentDescription = null)
+                        }
+                    }
                 }
+
             )
         },
 
+
     ){
 
-        Column(modifier = Modifier.padding(it)) {
+        Box(modifier = Modifier.padding(it)) {
             NavigationHost(navController = navController)
         }
     }
@@ -51,7 +92,7 @@ fun NavigationHost(navController: NavHostController) {
         composable(route = Screen.HomeScreen.route) {
             HomeScreen(
                 movieClicked = {
-                    navController.navigate(Screen.DetailScreen.route + "/${it.imdbID}")
+                    navController.navigate(Screen.DetailScreen.route + "/${it}")
                 },
                 searchClicked = {
                     navController.navigate(Screen.SearchScreen.route)
