@@ -10,6 +10,9 @@ interface MovieDAO  {
     @Query("SELECT * FROM Movie ORDER BY title ASC")
     fun getAll(): Flow<List<Movie>>
 
+    @Query("Select * FROM Movie WHERE imdbID = :id")
+    fun getMovie(id: String): Flow<Movie>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend  fun insertMovie(movie: Movie)
 
