@@ -11,6 +11,7 @@ data class Movie(
     val title: String,
     var posterUrl: String,
     var watched: Boolean = false,
+    @ColumnInfo(defaultValue = "-1") var year: Int,
 
     @ColumnInfo(defaultValue = "Movie") val resultType: MovieType,
 

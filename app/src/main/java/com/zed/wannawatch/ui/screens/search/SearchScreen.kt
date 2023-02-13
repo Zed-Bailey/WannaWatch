@@ -186,6 +186,7 @@ fun Search(
                                 title = it.Title,
                                 posterUrl = it.Poster,
                                 resultType = type,
+                                year = it.Year.toIntOrNull() ?: -1
                             )
                         )
                         dialogOpen = false
