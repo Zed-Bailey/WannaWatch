@@ -150,7 +150,12 @@ fun Search(
                                     viewModel.getDetail(results[it].imdbID)
                                 }) {
 
-                                AsyncImage(model = results[it].Poster, contentDescription = null, modifier = Modifier.aspectRatio(2f/3f))
+                                AsyncImage(
+                                    model = results[it].Poster,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .aspectRatio(2f/3f)
+                                )
                             }
                         }
                     }

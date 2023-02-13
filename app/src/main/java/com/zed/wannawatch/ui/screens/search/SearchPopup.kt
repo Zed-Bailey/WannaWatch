@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import com.zed.wannawatch.services.api.models.SearchDetail
+import java.util.*
 
 @Composable
 fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: () -> Unit) {
@@ -38,6 +39,7 @@ fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: ()
         ) {
 
             if (detailLoading == true) {
+                // todo extract to composable function
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -94,7 +96,19 @@ fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: ()
                         .padding(bottom = 10.dp),
                 ) {
 
-                    Text(selectedResult.Type, fontWeight = FontWeight.Bold)
+                    Row() {
+
+                        Text(text = selectedResult.Year)
+
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Text(selectedResult.Type.replaceFirstChar {
+                            if (it.isLowerCase()) it.titlecase(
+                                Locale.ROOT
+                            ) else it.toString()
+                        }, fontWeight = FontWeight.Bold)
+                    }
+
 
                     Spacer(modifier = Modifier.height(5.dp))
 

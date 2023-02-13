@@ -31,7 +31,10 @@ fun DetailScreen(
     navController: NavController,
     movieId: String,
     viewModel: DetailViewModel = viewModel(
-        factory = DetailViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository, movieId)
+        factory = DetailViewModelFactory(
+            (LocalContext.current.applicationContext as MovieApplication).repository,
+            movieId
+        )
     )
 ) {
 
@@ -52,7 +55,7 @@ fun DetailScreen(
             }
         )
     ) {
-        if(movieState != null) {
+        if (movieState != null) {
             Details(
                 movie = movieState!!,
                 watchedToggle = { viewModel.toggleWatched() },
@@ -66,20 +69,25 @@ fun DetailScreen(
     }
 
 
-
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Unit, onNotesChanged: (String) -> Unit) {
+fun Details(
+    movie: Movie,
+    watchedToggle: () -> Unit,
+    ratingOnClick: (Int) -> Unit,
+    onNotesChanged: (String) -> Unit
+) {
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
-        AsyncImage(model = movie.posterUrl, contentDescription = null,
+        AsyncImage(
+            model = movie.posterUrl, contentDescription = null,
             modifier = Modifier
                 .align(CenterHorizontally)
                 .padding(horizontal = 20.dp)
@@ -89,7 +97,13 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(movie.title, style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primary)
+        Text(
+            movie.title,
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.primary
+        )
 
         Button(
             shape = RoundedCornerShape(10.dp),
@@ -105,7 +119,10 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
 
 
         ) {
-            Text(text = if(movie.watched) "Un-Watch" else "Watched", color = MaterialTheme.colorScheme.onPrimary)
+            Text(
+                text = if (movie.watched) "Un-Watch" else "Watched",
+                color = MaterialTheme.colorScheme.onPrimary
+            )
         }
 
         Button(
@@ -115,6 +132,8 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
                 // url= {base}/movies/view/{imdbId}-{movie name}-{year}
                 // where imdbID is stripped of 'tt' prefix and any spaces in movie name
                 // are replaced with dashes
+
+
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -142,8 +161,8 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
             Text(
                 "Movie Notes",
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                fontSize = 20.sp ,
-                textAlign = TextAlign.Left ,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Left,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(20.dp, 0.dp)
@@ -173,14 +192,13 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
 @Composable
 fun RatingRow(currRating: Int, onClick: (Int) -> Unit) {
 
-    val options = listOf(("" to ""))
-
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 20.dp)
-        .horizontalScroll(
-            rememberScrollState()
-        )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 20.dp)
+            .horizontalScroll(
+                rememberScrollState()
+            )
     ) {
         RatingIcon(
             iconId = R.drawable.vomiting_face,
@@ -227,8 +245,16 @@ fun RatingIcon(iconId: Int, selected: Boolean, onClick: () -> Unit) {
 fun DetailsPreview() {
     Surface(modifier = Modifier.background(Color.White)) {
         Details(
-            movie = Movie("", "Movie Title", "https://via.placeholder.com/150", rating = 2, watched = true, notes = "this is the notes", resultType = MovieType.Movie),
-            watchedToggle = {  },
+            movie = Movie(
+                "",
+                "Movie Title",
+                "https://via.placeholder.com/150",
+                rating = 2,
+                watched = true,
+                notes = "this is the notes",
+                resultType = MovieType.Movie
+            ),
+            watchedToggle = { },
             ratingOnClick = { },
             onNotesChanged = { }
         )
