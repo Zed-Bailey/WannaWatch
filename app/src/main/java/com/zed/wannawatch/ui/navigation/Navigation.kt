@@ -19,7 +19,7 @@ fun Navigation() {
     val navController = rememberNavController()
 
     Surface(
-        color = MaterialTheme.colorScheme.surface
+        color = MaterialTheme.colorScheme.background
     ) {
         NavigationHost(navController = navController)
     }

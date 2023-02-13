@@ -42,9 +42,13 @@ fun WannaWatchScaffold(
                     Icon(Icons.Rounded.ArrowBack, contentDescription = null)
                 }
             }
+
             Spacer(modifier = Modifier.weight(1f))
-            Text("WannaWatch", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+
+            Text("WannaWatch", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+
             Spacer(modifier = Modifier.weight(1f))
+
             if(scaffoldState.shouldShowDelete) {
                 IconButton(
                     onClick = scaffoldState.onDeletePressed,
