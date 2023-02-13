@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.zed.wannawatch.services.models.Movie
-import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.services.repository.MovieRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class DetailViewModel(private val repository: MovieRepository, private val movieId: String): ViewModel() {
 
-    private val _movieState = MutableStateFlow(Movie("","","", resultType = MovieType.Movie))
+    private val _movieState = MutableStateFlow<Movie?>(null)
     val movieState = _movieState.asStateFlow()
 
 
@@ -23,7 +22,7 @@ class DetailViewModel(private val repository: MovieRepository, private val movie
 
     fun toggleWatched() {
         _movieState.update {
-            it.copy(
+            it?.copy(
                 watched = !it.watched,
                 rating = -1,
                 notes = ""
@@ -35,7 +34,7 @@ class DetailViewModel(private val repository: MovieRepository, private val movie
 
     fun updateNotesText(text: String) {
         _movieState.update {
-            it.copy(
+            it?.copy(
                 notes = text
             )
         }
@@ -44,7 +43,7 @@ class DetailViewModel(private val repository: MovieRepository, private val movie
 
     fun updateRating(ratingValue: Int) {
         _movieState.update {
-            it.copy(
+            it?.copy(
                 rating = ratingValue
             )
         }
@@ -53,24 +52,30 @@ class DetailViewModel(private val repository: MovieRepository, private val movie
 
     private fun getMovie(id: String) = viewModelScope.launch {
         val movie = repository.getMovie(id)
-        movie.collect {flow ->
+        movie.collect { flow ->
             _movieState.update {
                 flow
             }
         }
     }
 
-    private fun update(movie: Movie) = viewModelScope.launch{
-        repository.updateMovie(movie)
+    private fun update(movie: Movie?) = viewModelScope.launch{
+        movie?.let {
+            repository.updateMovie(it)
+        }
     }
 
-    fun delete() = viewModelScope.launch {
+    fun delete(movie: Movie?) = viewModelScope.launch {
 
-        repository.deleteMovie(_movieState.value)
-        _movieState.update {
+        movie?.let {
+            repository.deleteMovie(it)
 
-            Movie("","","", resultType = MovieType.Movie)
+            _movieState.update {
+                null
+            }
         }
+
+
 
     }
 }

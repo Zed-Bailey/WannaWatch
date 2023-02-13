@@ -47,18 +47,22 @@ fun DetailScreen(
             },
             onDeletePressed = {
                 Log.i("com.zed.wannawatch", "delete pressed")
-                viewModel.delete()
-
+                viewModel.delete(movieState)
                 navController.popBackStack()
             }
         )
     ) {
-        Details(
-            movie = movieState,
-            watchedToggle = { viewModel.toggleWatched() },
-            ratingOnClick = { viewModel.updateRating(it) },
-            onNotesChanged = { viewModel.updateNotesText(it) }
-        )
+        if(movieState != null) {
+            Details(
+                movie = movieState!!,
+                watchedToggle = { viewModel.toggleWatched() },
+                ratingOnClick = { viewModel.updateRating(it) },
+                onNotesChanged = { viewModel.updateNotesText(it) }
+            )
+        } else {
+            Text("Nothing here")
+        }
+
     }
 
 
@@ -96,7 +100,8 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(40.dp, 15.dp)
-                .align(CenterHorizontally)
+                .align(CenterHorizontally),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
 
 
         ) {
@@ -114,10 +119,11 @@ fun Details(movie: Movie, watchedToggle: () -> Unit, ratingOnClick: (Int) -> Uni
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(40.dp, 15.dp)
-                .align(CenterHorizontally)
+                .align(CenterHorizontally),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
 
         ) {
-            Text(text = "Watch Online", color = MaterialTheme.colorScheme.onPrimary)
+            Text(text = "Watch Online", color = MaterialTheme.colorScheme.onSecondary)
         }
 
         RatingRow(
