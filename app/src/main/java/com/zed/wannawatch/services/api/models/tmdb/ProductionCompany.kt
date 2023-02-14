@@ -1,7 +1,7 @@
-package com.zed.wannawatch.services.api.models
+package com.zed.wannawatch.services.api.models.tmdb
 import kotlinx.serialization.Serializable
 @Serializable
-data class Network(
+data class ProductionCompany(
     val id: Int,
     val logo_path: String?,
     val name: String,
