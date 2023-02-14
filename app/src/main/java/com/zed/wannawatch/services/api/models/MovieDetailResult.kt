@@ -1,12 +1,12 @@
 package com.zed.wannawatch.services.api.models
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonObject
 
 @Serializable
 data class MovieDetailResult(
     val adult: Boolean,
     val backdrop_path: String?,
-    val belongs_to_collection: JsonPrimitive?,
+    val belongs_to_collection: JsonObject?,
     val budget: Int,
     val genres: List<Genre>,
     val homepage: String?,
