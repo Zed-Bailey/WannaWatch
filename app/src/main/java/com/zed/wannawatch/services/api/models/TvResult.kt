@@ -3,6 +3,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TvResult(
+    val adult: Boolean,
     val backdrop_path: String?,
     val first_air_date: String,
     val genre_ids: List<Int>,
