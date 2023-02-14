@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -22,7 +21,6 @@ import coil.compose.AsyncImage
 import com.zed.wannawatch.R
 import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.models.Movie
-import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.ui.ScaffoldState
 import com.zed.wannawatch.ui.WannaWatchScaffold
 
@@ -60,7 +58,7 @@ fun DetailScreen(
                 movie = movieState!!,
                 watchedToggle = { viewModel.toggleWatched() },
                 ratingOnClick = { viewModel.updateRating(it) },
-                onNotesChanged = { viewModel.updateNotesText(it) }
+                onNotesChanged = { viewModel.updateNotesText(it) },
             )
         } else {
             Text("Nothing here")
@@ -78,9 +76,8 @@ fun Details(
     movie: Movie,
     watchedToggle: () -> Unit,
     ratingOnClick: (Int) -> Unit,
-    onNotesChanged: (String) -> Unit
+    onNotesChanged: (String) -> Unit,
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -128,12 +125,7 @@ fun Details(
         Button(
             shape = RoundedCornerShape(10.dp),
             onClick = {
-                // TODO open webview with lookmovie
-                // url= {base}/movies/view/{imdbId}-{movie name}-{year}
-                // where imdbID is stripped of 'tt' prefix and any spaces in movie name
-                // are replaced with dashes
-
-
+                // todo navigate to stream screen
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -184,7 +176,6 @@ fun Details(
 
             Spacer(modifier = Modifier.height(10.dp))
         }
-
     }
 }
 
@@ -240,25 +231,26 @@ fun RatingIcon(iconId: Int, selected: Boolean, onClick: () -> Unit) {
     )
 }
 
-@Preview
-@Composable
-fun DetailsPreview() {
-    Surface(modifier = Modifier.background(Color.White)) {
-        Details(
-            movie = Movie(
-                "",
-                "Movie Title",
-                "https://via.placeholder.com/150",
-                rating = 2,
-                watched = true,
-                notes = "this is the notes",
-                resultType = MovieType.Movie
-            ),
-            watchedToggle = { },
-            ratingOnClick = { },
-            onNotesChanged = { }
-        )
-    }
-
-}
+//@Preview
+//@Composable
+//fun DetailsPreview() {
+//    Surface(modifier = Modifier.background(Color.White)) {
+//        Details(
+//            movie = Movie(
+//                "",
+//                "Movie Title",
+//                "https://via.placeholder.com/150",
+//                rating = 2,
+//                watched = true,
+//                notes = "this is the notes",
+//                resultType = MovieType.Movie,
+//                description = "this is the movie/series description"
+//            ),
+//            watchedToggle = { },
+//            ratingOnClick = { },
+//            onNotesChanged = { },
+//        )
+//    }
+//
+//}
 
