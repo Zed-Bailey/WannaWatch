@@ -1,5 +1,6 @@
 package com.zed.wannawatch.ui.screens.search
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -17,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +31,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.zed.wannawatch.R
 import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
@@ -112,9 +116,9 @@ fun Search(
             }
         )
 
-        Row() {
+        Row(modifier = Modifier.padding(horizontal = 10.dp)) {
 
-            Text("Search for a ")
+            Text("Search for a ", modifier = Modifier.align(CenterVertically))
             Spacer(Modifier.width(5.dp))
             FilterChip(
                 selected = selected == MovieType.Movie,
@@ -162,88 +166,91 @@ fun Search(
             }
 
         } else {
-            if(viewModel.error) {
-                Text("something happened")
-            } else {
 
-                if(selected == MovieType.Movie) {
-                    // show movie results
-                    movieResults?.let {
-                        val results = it.results
-                        LazyVerticalGrid(
-                            userScrollEnabled = true,
-                            state = rememberLazyGridState(),
-                            contentPadding = PaddingValues(vertical = 10.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(5.dp)
-                                .align(CenterHorizontally),
-                            columns = GridCells.Fixed(3)
-                        ){
-                            items(results.size) {
-                                Box(modifier = Modifier
-                                    .width(128.dp)
-                                    .padding(5.dp)
-//                                    .background(Color.Gray)
-                                    .clickable {
-                                        dialogOpen = true
-                                        viewModel.getDetail(results[it].id, selected)
-                                    }) {
-
-                                    // todo add placeholder image
-                                    // todo add loading animation?
-                                    AsyncImage(
-                                        model =  TMDBConstants.imageBasePath + results[it].poster_path,
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .aspectRatio(2f/3f)
-                                    )
-                                }
-                            }
-                        }
+            if(selected == MovieType.Movie) {
+                // show movie results
+                movieResults?.let {
+                    val results = it.results
+                    if(results.isEmpty()) {
+                        Text("No results :(")
                     }
-                } else {
-                    // show series results
-                    seriesResults?.let {
-                        val results = it.results
-                        LazyVerticalGrid(
-                            userScrollEnabled = true,
-                            state = rememberLazyGridState(),
-                            contentPadding = PaddingValues(vertical = 10.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            modifier = Modifier
-                                .fillMaxSize()
+                    LazyVerticalGrid(
+                        userScrollEnabled = true,
+                        state = rememberLazyGridState(),
+                        contentPadding = PaddingValues(vertical = 10.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(5.dp)
+                            .align(CenterHorizontally),
+                        columns = GridCells.Fixed(3)
+                    ){
+                        items(results.size) {
+                            Box(modifier = Modifier
+                                .width(128.dp)
                                 .padding(5.dp)
-                                .align(CenterHorizontally),
-                            columns = GridCells.Fixed(3)
-                        ){
-                            items(results.size) {
-                                Box(modifier = Modifier
-                                    .width(128.dp)
-                                    .padding(5.dp)
-                                    .clickable {
-                                        dialogOpen = true
-                                        viewModel.getDetail(results[it].id, selected)
-                                    }) {
+                                .clickable {
+                                    dialogOpen = true
+                                    viewModel.getDetail(results[it].id, selected)
+                                }) {
 
-                                    AsyncImage(
-                                        model =  TMDBConstants.imageBasePath + results[it].poster_path,
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .aspectRatio(2f/3f)
-                                    )
-                                }
+                                // todo add placeholder image
+                                // todo add loading animation?
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(TMDBConstants.imageBasePath + results[it].poster_path)
+                                        .placeholder(R.drawable.placeholder)
+                                        .crossfade(true)
+                                        .build(),
+
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .aspectRatio(2f/3f)
+                                )
                             }
                         }
                     }
                 }
+            } else {
+                // show series results
+                seriesResults?.let {
+                    val results = it.results
+                    if(results.isEmpty()) {
+                        Text("No results :(")
+                    }
+                    LazyVerticalGrid(
+                        userScrollEnabled = true,
+                        state = rememberLazyGridState(),
+                        contentPadding = PaddingValues(vertical = 10.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(5.dp)
+                            .align(CenterHorizontally),
+                        columns = GridCells.Fixed(3)
+                    ){
+                        items(results.size) {
+                            Box(modifier = Modifier
+                                .width(128.dp)
+                                .padding(5.dp)
+                                .clickable {
+                                    dialogOpen = true
+                                    viewModel.getDetail(results[it].id, selected)
+                                }) {
 
+                                AsyncImage(
+                                    model =  TMDBConstants.imageBasePath + results[it].poster_path,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .aspectRatio(2f/3f)
+                                )
+                            }
+                        }
+                    }
+                }
             }
-
-
         }
 
         if(dialogOpen) {
@@ -296,6 +303,10 @@ fun Search(
                 }
 
             }
+        }
+
+        if(viewModel.error) {
+            Toast.makeText(context, viewModel.errorMessage, Toast.LENGTH_LONG).show()
         }
 
 

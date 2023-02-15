@@ -1,5 +1,6 @@
 package com.zed.wannawatch.ui.screens.search
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.zed.wannawatch.services.api.models.*
+import com.zed.wannawatch.services.api.models.tmdb.*
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.services.repository.*
@@ -20,6 +22,9 @@ class SearchViewModel(private val repository: MovieRepository): ViewModel() {
 
 
     var error by mutableStateOf(false)
+        private set
+
+    var errorMessage by mutableStateOf("")
         private set
 
     var loading by mutableStateOf(false)
@@ -109,12 +114,21 @@ class SearchViewModel(private val repository: MovieRepository): ViewModel() {
         // if is a series fetch the imdb id from the api
         if(movie.resultType == MovieType.Series) {
             val response = tmdbRepository.getTvId(movie.tmdbId)
-            model = movie.copy(
-                imdbID = response?.imdb_id ?: ""
-            )
+            Log.d("com.zed.wannawatch", "$response")
+            if(response?.imdb_id != null) {
+                model = movie.copy(
+                    imdbID = response.imdb_id
+                )
+            } else {
+                error = true
+                errorMessage = "Failed to get IMDB id"
+            }
+
         }
 
-        repository.insertMovie(model)
+        if(!error) {
+            repository.insertMovie(model)
+        }
     }
 }
 
