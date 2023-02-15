@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
-import com.zed.wannawatch.services.api.models.TvDetailResult
+import com.zed.wannawatch.services.api.models.tmdb.TvDetailResult
 import com.zed.wannawatch.services.repository.TMDBConstants
 
 @Composable

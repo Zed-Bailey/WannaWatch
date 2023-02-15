@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
-import com.zed.wannawatch.services.api.models.MovieDetailResult
+import com.zed.wannawatch.services.api.models.tmdb.MovieDetailResult
 import com.zed.wannawatch.services.repository.TMDBConstants
 
 @Composable
@@ -102,7 +102,7 @@ fun MovieDetailDialog(model: MovieDetailResult, detailLoading: Boolean?, onAdd: 
                     Text(
 
                         if (model.runtime?.toString() != "")
-                            "${model.runtime?.toString()} runtime"
+                            "${model.runtime?.toString()} mins runtime"
                         else
                             "Runtime unavailable"
                     )
