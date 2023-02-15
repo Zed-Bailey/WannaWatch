@@ -1,7 +1,7 @@
 package com.zed.wannawatch.services.repository
 
 import com.zed.wannawatch.BuildConfig
-import com.zed.wannawatch.services.api.models.*
+import com.zed.wannawatch.services.api.models.tmdb.*
 
 
 class TMDBRepositoryImpl(
@@ -56,7 +56,7 @@ class TMDBRepositoryImpl(
     override suspend fun getTvId(id: Int): TvExternalIds? {
         // uses the tmdb id of the tv show to get the imdb id
         // https://developers.themoviedb.org/3/tv/get-tv-external-ids
-        val response = service.getTvIds(id)
+        val response = service.getTvIds(id, tmdb_key)
         return response.body()
     }
 
