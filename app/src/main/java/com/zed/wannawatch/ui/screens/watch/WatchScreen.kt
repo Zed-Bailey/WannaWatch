@@ -24,15 +24,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.web.*
 import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.api.models.seapi.ServerResult
 import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.ui.ScaffoldState
 import com.zed.wannawatch.ui.WannaWatchScaffold
 
-//todo add scaffold for back button
 
 @Composable
 fun WatchScreen(navController: NavController,
@@ -66,10 +63,6 @@ fun Watch(
     viewModel: WatchViewModel
 ) {
     val context = LocalContext.current
-
-//    LaunchedEffect(Unit) {
-//        viewModel.getModel((context.applicationContext as MovieApplication).repository, imdbId)
-//    }
 
     val loading = viewModel.loading
 
@@ -183,14 +176,7 @@ fun Watch(
                     Modifier.align(Center)
                 )
             }
-
-
-
         }
-
-
-
-
 
     }
 }
@@ -295,7 +281,6 @@ fun SeasonList(options: List<Int>, currentlySelected: Int, onSelected: (Int) -> 
             }
         ) {
             Text(text = "Season $currentlySelected", color = MaterialTheme.colorScheme.onSurface)
-//            Icon(Icons.Rounded.ArrowDropDown, contentDescription = "drop down arrow")
             Icon(
                 if (expanded) Icons.Rounded.ArrowDropUp else Icons.Rounded.ArrowDropDown,
                 contentDescription = null
@@ -375,11 +360,4 @@ fun EpisodeList(episodeCount: Int, currentlySelected: Int, onSelected: (Int) -> 
             }
         }
     }
-}
-
-
-@Preview
-@Composable
-fun WatchPreview() {
-    WatchScreen(navController = rememberNavController(), imdbId = "tt0468569")
 }
