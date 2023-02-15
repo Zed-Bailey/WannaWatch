@@ -1,25 +1,27 @@
 package com.zed.wannawatch.ui.screens.search
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.valentinilk.shimmer.shimmer
 import com.zed.wannawatch.services.api.models.tmdb.MovieDetailResult
 import com.zed.wannawatch.services.repository.TMDBConstants
 
 @Composable
-fun MovieDetailDialog(model: MovieDetailResult, detailLoading: Boolean?, onAdd: () -> Unit ) {
+fun MovieDetailDialog(model: MovieDetailResult, detailLoading: Boolean?, onAdd: () -> Unit, onClose: () -> Unit) {
     val genres = model.genres.map { it.name }
 
     Card(
@@ -28,47 +30,29 @@ fun MovieDetailDialog(model: MovieDetailResult, detailLoading: Boolean?, onAdd: 
             .padding(20.dp)
             .fillMaxWidth()
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(onClick = onClose) {
+                Icon(Icons.Rounded.Close, null)
+            }
+        }
         Column(
             modifier = Modifier
                 .padding(20.dp)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
 
-
         ) {
 
             if (detailLoading == true) {
-                // todo extract to composable function
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .shimmer()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .width(128.dp)
-                            .height(170.dp)
-                            .background(Color.Gray)
-                            .align(Alignment.CenterHorizontally)
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .height(15.dp)
-                            .padding(10.dp)
-                            .background(Color.Gray)
-                            .align(Alignment.CenterHorizontally)
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .height(60.dp)
-                            .padding(10.dp)
-                            .background(Color.Gray)
-                    )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
                 }
             }
             else {
+
                 AsyncImage(
                     model = TMDBConstants.imageBasePath + (model.poster_path ?: model.backdrop_path),
                     contentDescription = "poster image for ${model.title}",
@@ -95,7 +79,7 @@ fun MovieDetailDialog(model: MovieDetailResult, detailLoading: Boolean?, onAdd: 
                         .padding(bottom = 10.dp),
                 ) {
 
-                    Text(text = model.release_date)
+                    Text(text = model.release_date.take(4))
 
                     Spacer(modifier = Modifier.height(5.dp))
 

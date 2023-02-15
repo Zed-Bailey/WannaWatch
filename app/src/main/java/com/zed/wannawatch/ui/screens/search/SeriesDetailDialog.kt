@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,7 +20,7 @@ import com.zed.wannawatch.services.api.models.tmdb.TvDetailResult
 import com.zed.wannawatch.services.repository.TMDBConstants
 
 @Composable
-fun SeriesDetailDialog(model: TvDetailResult, detailLoading: Boolean?, onAdd: () -> Unit) {
+fun SeriesDetailDialog(model: TvDetailResult, detailLoading: Boolean?, onAdd: () -> Unit, onClose: () -> Unit) {
     val genres = model.genres.map { it.name }
 
     Card(
@@ -36,6 +37,14 @@ fun SeriesDetailDialog(model: TvDetailResult, detailLoading: Boolean?, onAdd: ()
 
 
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(onClick = onClose) {
+                    Icon(Icons.Rounded.Close, null)
+                }
+            }
 
             if (detailLoading == true) {
                 // todo extract to composable function
@@ -95,7 +104,7 @@ fun SeriesDetailDialog(model: TvDetailResult, detailLoading: Boolean?, onAdd: ()
                         .padding(bottom = 10.dp),
                 ) {
 
-                    Text(text = model.first_air_date)
+                    Text(text = model.first_air_date.take(4))
 
                     Spacer(modifier = Modifier.height(5.dp))
 
