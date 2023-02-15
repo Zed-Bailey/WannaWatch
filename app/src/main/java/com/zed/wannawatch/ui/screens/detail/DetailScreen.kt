@@ -59,6 +59,9 @@ fun DetailScreen(
                 watchedToggle = { viewModel.toggleWatched() },
                 ratingOnClick = { viewModel.updateRating(it) },
                 onNotesChanged = { viewModel.updateNotesText(it) },
+                onWatchClicked = {
+                    navController.navigate("watch_screen/${movieState!!.imdbID}")
+                }
             )
         } else {
             Text("Nothing here")
@@ -77,6 +80,7 @@ fun Details(
     watchedToggle: () -> Unit,
     ratingOnClick: (Int) -> Unit,
     onNotesChanged: (String) -> Unit,
+    onWatchClicked : () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -122,10 +126,10 @@ fun Details(
             )
         }
 
-        Button(
+        FilledTonalButton(
             shape = RoundedCornerShape(10.dp),
             onClick = {
-                // todo navigate to stream screen
+                onWatchClicked()
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -230,27 +234,3 @@ fun RatingIcon(iconId: Int, selected: Boolean, onClick: () -> Unit) {
             .clickable(enabled = !selected, onClick = onClick)
     )
 }
-
-//@Preview
-//@Composable
-//fun DetailsPreview() {
-//    Surface(modifier = Modifier.background(Color.White)) {
-//        Details(
-//            movie = Movie(
-//                "",
-//                "Movie Title",
-//                "https://via.placeholder.com/150",
-//                rating = 2,
-//                watched = true,
-//                notes = "this is the notes",
-//                resultType = MovieType.Movie,
-//                description = "this is the movie/series description"
-//            ),
-//            watchedToggle = { },
-//            ratingOnClick = { },
-//            onNotesChanged = { },
-//        )
-//    }
-//
-//}
-
