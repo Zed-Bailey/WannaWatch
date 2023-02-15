@@ -30,9 +30,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.zed.wannawatch.R
 import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
@@ -118,7 +115,7 @@ fun Search(
 
         Row(modifier = Modifier.padding(horizontal = 10.dp)) {
 
-            Text("Search for a ", modifier = Modifier.align(CenterVertically))
+            Text("I'm looking for a ", modifier = Modifier.align(CenterVertically))
             Spacer(Modifier.width(5.dp))
             FilterChip(
                 selected = selected == MovieType.Movie,
@@ -195,19 +192,8 @@ fun Search(
                                     viewModel.getDetail(results[it].id, selected)
                                 }) {
 
-                                // todo add placeholder image
-                                // todo add loading animation?
-                                AsyncImage(
-                                    model = ImageRequest.Builder(LocalContext.current)
-                                        .data(TMDBConstants.imageBasePath + results[it].poster_path)
-                                        .placeholder(R.drawable.placeholder)
-                                        .crossfade(true)
-                                        .build(),
+                                AnimatedImageLoader(url = TMDBConstants.imageBasePath + results[it].poster_path, 128.dp, 192.dp)
 
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .aspectRatio(2f/3f)
-                                )
                             }
                         }
                     }
@@ -240,12 +226,14 @@ fun Search(
                                     viewModel.getDetail(results[it].id, selected)
                                 }) {
 
-                                AsyncImage(
-                                    model =  TMDBConstants.imageBasePath + results[it].poster_path,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .aspectRatio(2f/3f)
-                                )
+                                AnimatedImageLoader(url = TMDBConstants.imageBasePath + results[it].poster_path, 128.dp, 192.dp)
+//
+//                                AsyncImage(
+//                                    model =  TMDBConstants.imageBasePath + results[it].poster_path,
+//                                    contentDescription = null,
+//                                    modifier = Modifier
+//                                        .aspectRatio(2f/3f)
+//                                )
                             }
                         }
                     }
@@ -268,37 +256,52 @@ fun Search(
 
                 if(selected == MovieType.Movie) {
                     movieDetail.value?.let {
-                        MovieDetailDialog(model = it, detailLoading) {
-                            val movie = Movie(
-                                imdbID = it.imdb_id!!,
-                                tmdbId = it.id,
-                                title = it.title,
-                                description = it.overview ?: it.tagline ?: "No description provided",
-                                year = it.release_date.take(4).toInt(),
-                                resultType = MovieType.Movie,
-                                //  posterUrl = it.poster_path ?: it.backdrop_path ?: "https://via.placeholder.com/200x300?text=${it.title.replace(' ', '+')}",
-                                posterUrl = TMDBConstants.imageBasePath + (it.poster_path ?: it.backdrop_path)
-                            )
-                            dialogOpen = false
-                            viewModel.addModel(movie)
-                        }
+                        MovieDetailDialog(
+                            model = it,
+                            detailLoading = detailLoading,
+                            onClose = {
+                                dialogOpen = false
+                            },
+                            onAdd =  {
+                                val movie = Movie(
+                                    imdbID = it.imdb_id!!,
+                                    tmdbId = it.id,
+                                    title = it.title,
+                                    description = it.overview ?: it.tagline ?: "No description provided",
+                                    year = it.release_date.take(4).toInt(),
+                                    resultType = MovieType.Movie,
+                                    posterUrl = TMDBConstants.imageBasePath + (it.poster_path ?: it.backdrop_path)
+                                )
+                                dialogOpen = false
+                                viewModel.addModel(movie)
+                                Toast.makeText(context, "Added Movie", Toast.LENGTH_SHORT).show()
+                            }
+                        )
                     }
                 } else if(selected == MovieType.Series) {
                     seriesDetail.value?.let {
-                        SeriesDetailDialog(model = it, detailLoading) {
-                            val movie = Movie(
-                                imdbID = "",
-                                tmdbId = it.id,
-                                title = it.name,
-                                description = it.overview,
-                                year = it.first_air_date.take(4).toInt(),
-                                resultType = MovieType.Series,
-                                posterUrl = TMDBConstants.imageBasePath + (it.poster_path ?: it.backdrop_path),
-                                seriesSeasons = Json.encodeToString(value = it.seasons),
-                            )
-                            dialogOpen = false
-                            viewModel.addModel(movie)
-                        }
+                        SeriesDetailDialog(
+                            model = it,
+                            detailLoading = detailLoading,
+                            onAdd =  {
+                                val movie = Movie(
+                                    imdbID = "",
+                                    tmdbId = it.id,
+                                    title = it.name,
+                                    description = it.overview,
+                                    year = it.first_air_date.take(4).toInt(),
+                                    resultType = MovieType.Series,
+                                    posterUrl = TMDBConstants.imageBasePath + (it.poster_path ?: it.backdrop_path),
+                                    seriesSeasons = Json.encodeToString(value = it.seasons),
+                                )
+                                dialogOpen = false
+                                viewModel.addModel(movie)
+                                Toast.makeText(context, "Added Series", Toast.LENGTH_SHORT).show()
+                            },
+                            onClose = {
+                                dialogOpen = false
+                            }
+                        )
                     }
                 }
 
