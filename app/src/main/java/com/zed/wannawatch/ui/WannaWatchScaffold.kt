@@ -6,7 +6,9 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 
 data class ScaffoldState(
     val shouldShowBack: Boolean = false,
@@ -49,7 +51,7 @@ fun WannaWatchScaffold(
 
         )
 
-//        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(10.dp))
 
         content()
 
