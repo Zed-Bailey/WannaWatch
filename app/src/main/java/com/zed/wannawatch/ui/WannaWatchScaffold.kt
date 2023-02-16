@@ -3,7 +3,6 @@ package com.zed.wannawatch.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,9 +11,12 @@ import androidx.compose.ui.unit.dp
 
 data class ScaffoldState(
     val shouldShowBack: Boolean = false,
-    val shouldShowDelete: Boolean = false,
     val onBackPressed: () -> Unit = {},
-    val onDeletePressed: () -> Unit = {}
+
+    /**
+     * the items to place on the right of the app bar
+     */
+    val actions: @Composable() (RowScope.() -> Unit)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,15 +41,7 @@ fun WannaWatchScaffold(
                 }
             },
 
-            actions = {
-                if(scaffoldState.shouldShowDelete) {
-                    IconButton(
-                        onClick = scaffoldState.onDeletePressed,
-                    ) {
-                        Icon(Icons.Rounded.Delete, contentDescription = null)
-                    }
-                }
-            }
+            actions = scaffoldState.actions
 
         )
 
