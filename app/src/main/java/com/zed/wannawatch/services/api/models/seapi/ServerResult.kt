@@ -5,7 +5,6 @@ data class ServerResult(
     val exact_match: Int,
     val quality: String,
     val server: String,
-    val size: Int,
     val title: String,
     val url: String
 )
