@@ -109,7 +109,10 @@ fun SeriesDetailDialog(model: TvDetailResult, detailLoading: Boolean?, onAdd: ()
                     Spacer(modifier = Modifier.height(5.dp))
 
                     Text(
-                        "Runtime ${model.episode_run_time.firstOrNull() ?: "unavailable"}"
+                        if(model.episode_run_time.firstOrNull() == null)
+                            "Runtime Unavailable"
+                        else
+                            "Runtime ${model.episode_run_time.first()} mins"
                     )
 
 
