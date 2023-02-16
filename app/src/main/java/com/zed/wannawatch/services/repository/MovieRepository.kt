@@ -6,7 +6,7 @@ import com.zed.wannawatch.services.models.Movie
 import kotlinx.coroutines.flow.Flow
 
 class MovieRepository(private val movieDAO: MovieDAO) {
-    val allMovies: Flow<List<Movie>> = movieDAO.getAll()
+
 
     @WorkerThread
     @Suppress("RedundantSuspendModifier")
@@ -14,6 +14,10 @@ class MovieRepository(private val movieDAO: MovieDAO) {
         movieDAO.insertMovie(movie)
     }
 
+    @WorkerThread
+    suspend fun getMovies(): Flow<List<Movie>> {
+        return movieDAO.getAll()
+    }
     @WorkerThread
     suspend fun updateMovie(movie: Movie) {
         movieDAO.updateMovie(movie)

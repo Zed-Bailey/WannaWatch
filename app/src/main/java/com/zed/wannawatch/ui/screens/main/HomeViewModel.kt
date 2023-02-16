@@ -1,20 +1,36 @@
 package com.zed.wannawatch.ui.screens.main
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.zed.wannawatch.services.HomeScreenWatchedFilter
 import com.zed.wannawatch.services.MediaTypeFilter
 import com.zed.wannawatch.services.MovieRatingFilter
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.services.repository.MovieRepository
+import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: MovieRepository): ViewModel() {
 
 
-    val movies = repository.allMovies
+    val movies = MutableLiveData<List<Movie>>()
+
     val fabExpanded = mutableStateOf(true)
+
+    var dataLoading = mutableStateOf(false)
+
+
+    fun getAllMovies() = viewModelScope.launch {
+        dataLoading.value = true
+
+        repository.getMovies().collect {
+            movies.value = it
+            dataLoading.value = false
+        }
+    }
 
     fun filterMovies(movies: List<Movie>, rating: MovieRatingFilter, watchedFilter: HomeScreenWatchedFilter, type: MediaTypeFilter): List<Movie> {
 
