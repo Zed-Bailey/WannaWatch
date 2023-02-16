@@ -2,7 +2,6 @@ package com.zed.wannawatch.ui.screens.main
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -11,8 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.zed.wannawatch.R
+import com.zed.wannawatch.ui.screens.search.AnimatedImageLoader
 
 
 @Composable
@@ -26,12 +25,8 @@ fun GridPosterItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
             }
     ) {
 
-        AsyncImage(model = posterUrl,
-            contentDescription = "movie poster image",
-            modifier = Modifier
-                .aspectRatio(2f / 3f)
-                .width(128.dp)
-        )
+        AnimatedImageLoader(url = posterUrl, width = 128.dp, height = 150.dp)
+
 
         if(watched) {
             Icon(
