@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -12,17 +14,18 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.zed.wannawatch.R
 import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.ui.ScaffoldState
 import com.zed.wannawatch.ui.WannaWatchScaffold
+import com.zed.wannawatch.ui.screens.search.AnimatedImageLoader
 
 @Composable
 fun DetailScreen(
@@ -30,42 +33,54 @@ fun DetailScreen(
     movieId: String,
     viewModel: DetailViewModel = viewModel(
         factory = DetailViewModelFactory(
-            (LocalContext.current.applicationContext as MovieApplication).repository,
-            movieId
+            repository = (LocalContext.current.applicationContext as MovieApplication).repository,
+            movieId = movieId
         )
     )
 ) {
 
     val movieState by viewModel.movieState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.getMovie(movieId)
+    }
 
     WannaWatchScaffold(
         scaffoldState = ScaffoldState(
             shouldShowBack = true,
-            shouldShowDelete = true,
             onBackPressed = {
                 navController.navigateUp()
             },
-            onDeletePressed = {
-                Log.i("com.zed.wannawatch", "delete pressed")
-                viewModel.delete(movieState)
-                navController.popBackStack()
+            actions = {
+                IconButton(
+                    onClick = {
+                        Log.i("com.zed.wannawatch", "delete pressed")
+                        viewModel.delete(movieState)
+                        navController.popBackStack()
+                    }
+                ) {
+                    Icon(Icons.Rounded.Delete, contentDescription = null)
+                }
             }
+
         )
     ) {
-        if (movieState != null) {
+
+
+        movieState?.let {movie ->
             Details(
-                movie = movieState!!,
-                watchedToggle = { viewModel.toggleWatched() },
-                ratingOnClick = { viewModel.updateRating(it) },
-                onNotesChanged = { viewModel.updateNotesText(it) },
+                movie = movie,
+                viewModel = viewModel,
                 onWatchClicked = {
-                    navController.navigate("watch_screen/${movieState!!.imdbID}")
+                    navController.navigate("watch_screen/${movie.imdbID}")
                 }
             )
-        } else {
-            Text("Nothing here")
         }
+
+
+
+
+
 
     }
 
@@ -77,9 +92,7 @@ fun DetailScreen(
 @Composable
 fun Details(
     movie: Movie,
-    watchedToggle: () -> Unit,
-    ratingOnClick: (Int) -> Unit,
-    onNotesChanged: (String) -> Unit,
+    viewModel: DetailViewModel,
     onWatchClicked : () -> Unit
 ) {
     Column(
@@ -87,14 +100,11 @@ fun Details(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        AsyncImage(
-            model = movie.posterUrl, contentDescription = null,
-            modifier = Modifier
-                .align(CenterHorizontally)
-                .padding(horizontal = 20.dp)
-                .width(200.dp)
-                .aspectRatio(2f / 3f)
-        )
+
+        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+            AnimatedImageLoader(url = movie.posterUrl, width = 200.dp, height = 300.dp)
+        }
+
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -109,20 +119,18 @@ fun Details(
         Button(
             shape = RoundedCornerShape(10.dp),
             onClick = {
-                watchedToggle()
+                viewModel.toggleWatched()
             },
 
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(40.dp, 15.dp)
+                .padding(40.dp, 10.dp)
                 .align(CenterHorizontally),
-            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
-
 
         ) {
             Text(
                 text = if (movie.watched) "Un-Watch" else "Watched",
-                color = MaterialTheme.colorScheme.onPrimary
+                fontWeight = FontWeight.Bold
             )
         }
 
@@ -133,7 +141,7 @@ fun Details(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(40.dp, 15.dp)
+                .padding(40.dp, 5.dp)
                 .align(CenterHorizontally),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
 
@@ -141,46 +149,47 @@ fun Details(
             Text(text = "Watch Online", color = MaterialTheme.colorScheme.onSecondary)
         }
 
+        Spacer(Modifier.height(25.dp))
+
         RatingRow(
             currRating = movie.rating,
             onClick = { ratingValue ->
-                ratingOnClick(ratingValue)
+                viewModel.updateRating(ratingValue)
             }
         )
 
-        Card(
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
-            modifier = Modifier.padding(15.dp)
-        ) {
-            Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                "Movie Notes",
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Left,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp, 0.dp)
-            )
+        Spacer(modifier = Modifier.height(25.dp))
 
-            OutlinedTextField(
-                colors = TextFieldDefaults.outlinedTextFieldColors(MaterialTheme.colorScheme.onPrimaryContainer),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(128.dp)
-                    .padding(15.dp),
-                value = movie.notes,
-                onValueChange = { onNotesChanged(it) },
-                maxLines = 10,
-                placeholder = {
-                    Text(text = "Write any notes here")
-                }
-            )
+        Text(
+            "Movie Notes",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Left,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp, 0.dp)
+        )
 
-            Spacer(modifier = Modifier.height(10.dp))
+        OutlinedTextField(
+            colors = TextFieldDefaults.outlinedTextFieldColors(MaterialTheme.colorScheme.onSurfaceVariant),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(128.dp)
+                .padding(15.dp),
+            value = movie.notes,
+            onValueChange = {
+                viewModel.updateNotesText(it)
+            },
+            maxLines = 10,
+            placeholder = {
+                Text(text = "Write any notes here")
+            }
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
         }
-    }
+
 }
 
 

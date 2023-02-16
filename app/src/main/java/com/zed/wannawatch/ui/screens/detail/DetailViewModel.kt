@@ -16,10 +16,6 @@ class DetailViewModel(private val repository: MovieRepository, movieId: String):
     val movieState = _movieState.asStateFlow()
 
 
-    init {
-        getMovie(movieId)
-    }
-
     fun toggleWatched() {
         _movieState.update {
             it?.copy(
@@ -50,7 +46,7 @@ class DetailViewModel(private val repository: MovieRepository, movieId: String):
         update(_movieState.value)
     }
 
-    private fun getMovie(id: String) = viewModelScope.launch {
+    fun getMovie(id: String) = viewModelScope.launch {
         val movie = repository.getMovie(id)
         movie.collect { flow ->
             _movieState.update {
