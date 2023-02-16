@@ -64,7 +64,7 @@ fun AnimatedImageLoader(url: String, width: Dp, height: Dp, contentDescription: 
 
             }
         },
-        contentScale = ContentScale.FillHeight
+        contentScale = ContentScale.FillBounds
     )
     val state = painter.state
 
