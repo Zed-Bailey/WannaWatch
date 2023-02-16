@@ -47,17 +47,19 @@ fun SearchScreen(
         factory = SearchViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository)
     )
 ) {
-    // todo: wannawatch text not centered when only back button
+
     WannaWatchScaffold(
         scaffoldState = ScaffoldState(
             shouldShowBack = true,
             onBackPressed = {
                 navController.navigateUp()
-            }
+            },
+            actions = { }
         )
     ) {
         Search(viewModel = viewModel)
     }
+
 }
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -113,7 +115,7 @@ fun Search(
             }
         )
 
-        Row(modifier = Modifier.padding(horizontal = 10.dp)) {
+        Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
 
             Text("I'm looking for a ", modifier = Modifier.align(CenterVertically))
             Spacer(Modifier.width(5.dp))
@@ -227,13 +229,7 @@ fun Search(
                                 }) {
 
                                 AnimatedImageLoader(url = TMDBConstants.imageBasePath + results[it].poster_path, 128.dp, 192.dp)
-//
-//                                AsyncImage(
-//                                    model =  TMDBConstants.imageBasePath + results[it].poster_path,
-//                                    contentDescription = null,
-//                                    modifier = Modifier
-//                                        .aspectRatio(2f/3f)
-//                                )
+
                             }
                         }
                     }

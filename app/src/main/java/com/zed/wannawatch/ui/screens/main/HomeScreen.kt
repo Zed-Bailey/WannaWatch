@@ -10,11 +10,11 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -39,7 +39,9 @@ fun HomeScreen(
     )
 ) {
 
-    WannaWatchScaffold(scaffoldState = ScaffoldState()) {
+    WannaWatchScaffold(scaffoldState = ScaffoldState(
+        actions = {}
+    )) {
         Home(
             viewModel = viewModel,
             movieClicked = {
@@ -224,7 +226,7 @@ fun Home(
 
             //
             if(movies.isEmpty()) {
-                Text(text = "No movies or tv-shows added", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize(),)
+                Text(text = "No movies or tv-shows added", modifier = Modifier.fillMaxSize().align(CenterHorizontally))
             } else {
                 // filters results to
                 val filteredMovies = viewModel.filterMovies(movies, ratingFilterValue, watchedFilterStatus, mediaTypeFilterValue)
@@ -285,7 +287,7 @@ fun ResultsGrid(movieItems: List<Movie>, tvshowItems: List<Movie>, listState: La
 
         if (tvshowItems.isNotEmpty()) {
             item(span = { GridItemSpan(this.maxLineSpan) } ){
-                SectionHeader("Tv Shows")
+                SectionHeader("Series")
             }
 
             items(tvshowItems.size) {
@@ -322,8 +324,7 @@ fun GridItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
 
         if(watched) {
             Icon(
-                // TODO fix watched tick name
-                painter = painterResource(id = R.drawable.wacthed_tick),
+                painter = painterResource(id = R.drawable.watched_tick),
                 contentDescription = null,
                 modifier = Modifier.align(Alignment.TopEnd),
                 tint = Color.Unspecified
@@ -334,34 +335,5 @@ fun GridItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
     }
 }
 
-@Composable
-fun SectionHeader(text: String) {
-    Column() {
-        Text(
-            text = text,
-            modifier = Modifier
-                .padding(start = 10.dp),
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Divider(color = MaterialTheme.colorScheme.secondary, modifier = Modifier.padding(horizontal = 10.dp), thickness = 1.dp)
-    }
 
-}
 
-@Composable
-fun SearchFAB(modifier: Modifier, expanded: Boolean, onclick : () -> Unit) {
-
-    ExtendedFloatingActionButton(
-        modifier = modifier,
-        text = {
-            Text(text = "Search")
-        },
-        icon = {
-            Icon(Icons.Rounded.Search, contentDescription = "Search FAB")
-        },
-        onClick = onclick,
-        expanded = expanded,
-    )
-
-}
