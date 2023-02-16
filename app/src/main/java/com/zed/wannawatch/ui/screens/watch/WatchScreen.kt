@@ -1,14 +1,13 @@
 package com.zed.wannawatch.ui.screens.watch
 
 
-import android.webkit.*
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.zed.wannawatch.services.MovieApplication
@@ -34,7 +34,9 @@ import com.zed.wannawatch.ui.WannaWatchScaffold
 @Composable
 fun WatchScreen(navController: NavController,
                 imdbId: String,
-                viewModel: WatchViewModel = viewModel()
+                viewModel: WatchViewModel = viewModel(
+                    factory = WatchViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository)
+                )
 ) {
 
     val context = LocalContext.current
@@ -48,6 +50,20 @@ fun WatchScreen(navController: NavController,
             shouldShowBack = true,
             onBackPressed = {
                 navController.navigateUp()
+            },
+            actions = {
+                viewModel.model.value?.let {
+                    if(it.resultType == MovieType.Series) {
+                        // show seasons refresh action item
+                        RefreshActionItem {
+                            if(it.tmdbId != 0) {
+                                viewModel.refreshSeasons(it.tmdbId)
+                            } else {
+                                Toast.makeText(context, "Error: please re-add this series", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    }
+                }
             }
         )
     ) {
@@ -91,8 +107,11 @@ fun Watch(
         .padding(10.dp)
     ) {
         if (loading) {
+            // model loading indicator
             Box(modifier = Modifier.fillMaxSize()) {
+
                 CircularProgressIndicator()
+
             }
         } else {
             model.value?.let { movie ->
@@ -129,9 +148,9 @@ fun Watch(
                 Button(
                     onClick = {
                         if(movie.resultType == MovieType.Movie) {
-                            viewModel.getMovieServers(movie.imdbID)
+                            viewModel.getServers(movie.imdbID)
                         } else {
-                            viewModel.getSeriesServer(movie.imdbID, selectedSeason, selectedEpisode)
+                            viewModel.getServers(movie.imdbID, selectedSeason, selectedEpisode)
                         }
                     },
                     modifier = Modifier.align(CenterHorizontally)
@@ -147,25 +166,31 @@ fun Watch(
 
         servers.value?.let { s ->
 
-            Text("Servers", style = MaterialTheme.typography.headlineMedium)
-            Divider(modifier = Modifier.padding(horizontal = 10.dp), thickness = 1.dp)
+            if(s.results.isEmpty()) {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+                Text("No Servers Found :(")
+
+            } else {
+
+                Text("Servers", style = MaterialTheme.typography.headlineMedium)
+                Divider(modifier = Modifier.padding(horizontal = 10.dp), thickness = 1.dp)
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
                 ) {
 
-                s.results.forEach {
+                    viewModel.filterServers(s.results).forEach {
 
-                    ServerListElement(server = it) {url ->
-                        viewModel.openCustomTab(url, context)
+                        ServerListElement(server = it) {url ->
+                            viewModel.openCustomTab(url, context)
+                        }
+
                     }
-
                 }
+
             }
-
-
         }
 
 
@@ -231,40 +256,12 @@ fun ServerListElementPreview() {
             title = "movie title",
             exact_match = 1,
             quality = "720p",
-            size = 1234,
             url = ""
         )
     ) {
         // would open url here
     }
 }
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ServerItem(model: ServerResult, selectedServer: ServerResult?, onSelected: () -> Unit) {
-
-    val selected = model == selectedServer
-    FilterChip(
-        modifier = Modifier.padding(horizontal = 2.dp),
-        selected = selected,
-        onClick = onSelected,
-        label = { Text("${model.server} - ${model.quality}") },
-        leadingIcon = if (selected) {
-            {
-                Icon(
-                    imageVector = Icons.Filled.Done,
-                    contentDescription = "Localized Description",
-                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                )
-            }
-        } else {
-            null
-        }
-    )
-
-}
-
 
 @Composable
 fun SeasonList(options: List<Int>, currentlySelected: Int, onSelected: (Int) -> Unit) {
@@ -338,7 +335,11 @@ fun EpisodeList(episodeCount: Int, currentlySelected: Int, onSelected: (Int) -> 
 
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }) {
+            onDismissRequest = { expanded = false },
+            properties = PopupProperties()
+
+        ) {
+
             episodes.forEach {
                 DropdownMenuItem(
                     onClick = {
@@ -358,6 +359,8 @@ fun EpisodeList(episodeCount: Int, currentlySelected: Int, onSelected: (Int) -> 
                     }
                 )
             }
+
+
         }
     }
 }
