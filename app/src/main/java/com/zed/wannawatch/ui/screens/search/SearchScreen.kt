@@ -23,6 +23,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -127,7 +128,7 @@ fun Search(
 
         Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
 
-            Text("I'm looking for a ", modifier = Modifier.align(CenterVertically))
+            Text("I'm looking for a ", modifier = Modifier.align(CenterVertically), fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.width(5.dp))
             FilterChip(
                 selected = selected == MovieType.Movie,

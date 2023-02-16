@@ -1,7 +1,6 @@
 package com.zed.wannawatch.ui.screens.main
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material.icons.Icons
@@ -12,14 +11,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import com.zed.wannawatch.R
 import com.zed.wannawatch.services.HomeScreenWatchedFilter
 import com.zed.wannawatch.services.MediaTypeFilter
 import com.zed.wannawatch.services.MovieApplication
@@ -98,10 +94,10 @@ fun Home(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-                Icon(Icons.Rounded.FilterList, null)
-                Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-                Text("Filter by")
+//                Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+//                Icon(Icons.Rounded.FilterList, null)
+//
+//                Text("Filter by")
 
                 Spacer(modifier = Modifier.width(20.dp))
                 // filter movies by watched/unwatched status
@@ -113,8 +109,14 @@ fun Home(
                             watchedFilterExpanded = true
                         }
                     ) {
-                        Text(text = "watched", color = MaterialTheme.colorScheme.onSurface)
-                        Icon(Icons.Rounded.ArrowDropDown, contentDescription = "drop down arrow")
+                        Icon(Icons.Rounded.FilterList, null)
+                        Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+
+                        Text(text = "Watched", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+
+                        Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+
+                        Icon(if (watchedFilterExpanded) Icons.Rounded.ArrowDropUp else Icons.Rounded.ArrowDropDown, contentDescription = "drop down arrow")
                     }
 
                     DropdownMenu(
@@ -152,8 +154,13 @@ fun Home(
                             ratingFilterExpanded = true
                         }
                     ) {
-                        Text(text = "rating", color = MaterialTheme.colorScheme.onSurface)
-                        Icon(Icons.Rounded.ArrowDropDown, contentDescription = "drop down arrow")
+                        Icon(Icons.Rounded.FilterList, null)
+                        Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+
+                        Text(text = "Rating", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+
+                        Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+                        Icon(if (ratingFilterExpanded) Icons.Rounded.ArrowDropUp else Icons.Rounded.ArrowDropDown, contentDescription = "drop down arrow")
                     }
 
                     DropdownMenu(
@@ -275,7 +282,7 @@ fun ResultsGrid(movieItems: List<Movie>, tvshowItems: List<Movie>, listState: La
             }
 
             items(movieItems.size) {
-                GridItem(
+                GridPosterItem(
                     watched = movieItems[it].watched,
                     posterUrl = movieItems[it].posterUrl,
                     onclick = {
@@ -291,7 +298,7 @@ fun ResultsGrid(movieItems: List<Movie>, tvshowItems: List<Movie>, listState: La
             }
 
             items(tvshowItems.size) {
-                GridItem(watched = tvshowItems[it].watched,
+                GridPosterItem(watched = tvshowItems[it].watched,
                     posterUrl = tvshowItems[it].posterUrl,
                     onclick = {
                         onclick(tvshowItems[it])
@@ -303,37 +310,6 @@ fun ResultsGrid(movieItems: List<Movie>, tvshowItems: List<Movie>, listState: La
     }
 }
 
-// TODO component needs a better name
-@Composable
-fun GridItem(watched: Boolean, posterUrl: String, onclick: () -> Unit) {
-
-    Box(
-        modifier = Modifier
-            .width(128.dp)
-            .clickable {
-                onclick()
-            }
-    ) {
-
-        AsyncImage(model = posterUrl,
-            contentDescription = "movie poster image",
-            modifier = Modifier
-                .aspectRatio(2f / 3f)
-                .width(128.dp)
-        )
-
-        if(watched) {
-            Icon(
-                painter = painterResource(id = R.drawable.watched_tick),
-                contentDescription = null,
-                modifier = Modifier.align(Alignment.TopEnd),
-                tint = Color.Unspecified
-            )
-
-        }
-
-    }
-}
 
 
 
