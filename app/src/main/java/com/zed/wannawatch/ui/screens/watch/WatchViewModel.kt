@@ -78,6 +78,8 @@ class WatchViewModel(
     fun openCustomTab(withUrl: String, context: Context) {
         // https://developer.chrome.com/docs/android/custom-tabs/integration-guide/#opening-a-custom-tab
         val builder = CustomTabsIntent.Builder()
+
+
         val customTabsIntent = builder.build()
         customTabsIntent.launchUrl(context, Uri.parse(withUrl))
     }

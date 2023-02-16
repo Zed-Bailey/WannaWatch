@@ -24,9 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.zed.wannawatch.R
 import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.api.models.seapi.ServerResult
 import com.zed.wannawatch.services.models.MovieType
+import com.zed.wannawatch.ui.LottieAnimatedView
 import com.zed.wannawatch.ui.ScaffoldState
 import com.zed.wannawatch.ui.WannaWatchScaffold
 
@@ -175,11 +177,14 @@ fun Watch(
                 Text("Servers", style = MaterialTheme.typography.headlineMedium)
                 Divider(modifier = Modifier.padding(horizontal = 10.dp), thickness = 1.dp)
 
+
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState()),
                 ) {
+                    Spacer(Modifier.height(15.dp))
 
                     viewModel.filterServers(s.results).forEach {
 
@@ -188,6 +193,8 @@ fun Watch(
                         }
 
                     }
+
+                    Spacer(Modifier.height(15.dp))
                 }
 
             }
@@ -197,9 +204,9 @@ fun Watch(
         Box(Modifier.fillMaxSize()) {
 
             if(serversLoading) {
-                CircularProgressIndicator(
-                    Modifier.align(Center)
-                )
+                Box(Modifier.align(Center)) {
+                    LottieAnimatedView(resId = R.raw.lottie_hand_loading)
+                }
             }
         }
 
