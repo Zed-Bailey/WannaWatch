@@ -115,8 +115,11 @@ fun SeriesDetailDialog(model: TvDetailResult, detailLoading: Boolean?, onAdd: ()
                             "Runtime ${model.episode_run_time.first()} mins"
                     )
 
+                    Spacer(modifier = Modifier.height(2.5.dp))
 
-                    Spacer(modifier = Modifier.height(5.dp))
+                    Text("${model.number_of_seasons} seasons ${model.number_of_episodes} episodes")
+
+                    Spacer(modifier = Modifier.height(2.5.dp))
 
                     LazyRow() {
                         items(genres.size) {
