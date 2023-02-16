@@ -180,8 +180,8 @@ fun Search(
 
         if(viewModel.loading) {
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = Modifier.align(Center))
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
+                LottieAnimatedView(resId = R.raw.lottie_hand_loading)
             }
 
         } else {
