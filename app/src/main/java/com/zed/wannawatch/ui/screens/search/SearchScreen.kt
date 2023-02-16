@@ -30,14 +30,17 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.zed.wannawatch.R
 import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.services.repository.TMDBConstants
+import com.zed.wannawatch.ui.LottieAnimatedView
 import com.zed.wannawatch.ui.ScaffoldState
 import com.zed.wannawatch.ui.WannaWatchScaffold
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.random.Random
 
 
 @Composable
@@ -93,27 +96,34 @@ fun Search(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        SearchField(
-            searchString = searchString,
-            showClearIcon = showClearIcon,
-            modifier = Modifier
-                .padding(top = 10.dp)
-                .align(CenterHorizontally),
-            onChange = {
-                searchString = it
-                showClearIcon = searchString.isNotEmpty()
-            },
-            onSearch = {
-                viewModel.search(searchString, selected)
 
-                // close keyboard
-                focusManager.clearFocus()
-            },
-            clearIconOnClick = {
-                searchString = ""
-                showClearIcon = false
-            }
-        )
+
+            SearchField(
+                searchString = searchString,
+                showClearIcon = showClearIcon,
+
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .padding(horizontal = 5.dp)
+                    .align(CenterHorizontally),
+
+                onChange = {
+                    searchString = it
+                    showClearIcon = searchString.isNotEmpty()
+                },
+                onSearch = {
+                    viewModel.search(searchString, selected)
+
+                    // close keyboard
+                    focusManager.clearFocus()
+                },
+                clearIconOnClick = {
+                    searchString = ""
+                    showClearIcon = false
+                }
+            )
+
+
 
         Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
 
@@ -157,6 +167,15 @@ fun Search(
         }
 
 
+        if(movieResults == null && seriesResults == null) {
+            val randomChance by remember {
+                mutableStateOf(Random.nextFloat() <= 0.05f)
+            }
+
+            if(randomChance) {
+                LottieAnimatedView(resId = R.raw.lottie_dancing_duck)
+            }
+        }
 
         if(viewModel.loading) {
 
