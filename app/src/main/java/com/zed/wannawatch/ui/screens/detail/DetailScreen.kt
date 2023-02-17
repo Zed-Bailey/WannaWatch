@@ -113,7 +113,7 @@ fun Details(
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.primary
+            fontWeight = FontWeight.SemiBold
         )
 
         Button(

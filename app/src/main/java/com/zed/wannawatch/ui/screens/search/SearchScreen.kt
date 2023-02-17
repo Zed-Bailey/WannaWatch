@@ -171,7 +171,7 @@ fun Search(
 
         if(movieResults == null && seriesResults == null) {
             val randomChance by remember {
-                mutableStateOf(Random.nextFloat() <= 1f)
+                mutableStateOf(Random.nextFloat() <= 0.05f)
             }
 
             if(randomChance) {
