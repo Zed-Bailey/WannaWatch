@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -166,12 +165,10 @@ fun Home(
                 }
             }
             else if (movies?.isEmpty() == true) {
-                Text(
-                    text = "No movies or tv-shows added",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(CenterHorizontally)
-                )
+                Box(Modifier.fillMaxWidth().padding(top = 50.dp), contentAlignment = Center) {
+                    Text("No Movies or Series added", style= MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp))
+                }
+
             } else {
                 movies?.let {
                     // filters results based on the type and filter paramters
