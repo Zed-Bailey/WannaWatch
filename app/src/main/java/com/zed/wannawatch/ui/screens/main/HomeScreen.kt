@@ -217,7 +217,7 @@ fun WatchedFilterDropdown(currentlySelected: HomeScreenWatchedFilter, onSelect: 
                 watchedFilterExpanded = true
             }
         ) {
-            Icon(Icons.Rounded.FilterList, null)
+            Icon(Icons.Rounded.FilterAlt, null, modifier = Modifier.size(ButtonDefaults.IconSize))
             Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
 
             Text(text = "Watched", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
@@ -266,7 +266,7 @@ fun RatingFilterDropDown(currentlySelected: MovieRatingFilter, onSelect: (MovieR
                 ratingFilterExpanded = true
             }
         ) {
-            Icon(Icons.Rounded.FilterList, null)
+            Icon(Icons.Rounded.FilterAlt, null, modifier = Modifier.size(ButtonDefaults.IconSize))
             Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
 
             Text(text = "Rating", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
