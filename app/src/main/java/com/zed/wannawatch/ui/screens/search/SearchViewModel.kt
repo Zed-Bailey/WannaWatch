@@ -8,74 +8,127 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.zed.wannawatch.services.api.models.SearchDetail
-import com.zed.wannawatch.services.api.models.SearchResult
+import com.zed.wannawatch.services.api.models.*
+import com.zed.wannawatch.services.api.models.tmdb.*
 import com.zed.wannawatch.services.models.Movie
-import com.zed.wannawatch.services.repository.ApiRepository
-import com.zed.wannawatch.services.repository.MovieRepository
+import com.zed.wannawatch.services.models.MovieType
+import com.zed.wannawatch.services.repository.*
 import kotlinx.coroutines.launch
 
 class SearchViewModel(private val repository: MovieRepository): ViewModel() {
 
-    val results = MutableLiveData<List<SearchResult>>()
+    val movieSearchResults = MutableLiveData<TMDBSearchResult<MovieResult>>()
+    val seriesSearchResults = MutableLiveData<TMDBSearchResult<TvResult>>()
 
-
-    private val apiRepository = ApiRepository()
 
     var error by mutableStateOf(false)
+        private set
+
+    var errorMessage by mutableStateOf("")
         private set
 
     var loading by mutableStateOf(false)
         private set
 
-    var detailResult = MutableLiveData<SearchDetail>()
-    var detailLoading = MutableLiveData<Boolean>(false)
+    var seriesDetail = MutableLiveData<TvDetailResult>()
+    var movieDetail = MutableLiveData<MovieDetailResult>()
 
-    fun search(query: String) {
+    var detailLoading = MutableLiveData(false)
+
+    private val tmdbRepository = TMDBRepositoryImpl()
+
+
+    fun search(query: String, type: MovieType) {
         loading = true
-        viewModelScope.launch {
-            val result = apiRepository.searchRequest(query.trim())
-            result.fold(onSuccess = { data ->
-                results.value = data.results
-            }, onFailure = {
-                Log.e("SearchViewModel", "failed to get search results :(")
-                error = true
-            })
-            loading = false
+
+        viewModelScope.launch{
+            when(type) {
+                MovieType.Movie -> {
+
+                    val response = tmdbRepository.searchMovie(query)
+                    if(response != null) {
+                        movieSearchResults.value = response
+                    } else {
+                        // set error
+                    }
+
+                    loading = false
+                }
+
+                MovieType.Series -> {
+                    val response = tmdbRepository.searchTv(query)
+                    if(response != null) {
+                        seriesSearchResults.value = response
+                    } else {
+                        // set error
+                    }
+
+                    loading = false
+                }
+            }
         }
+
     }
 
-    fun getDetail(imdbId: String) {
+    /**
+     * Gets the detail model for the movie or tv show from the api
+     */
+    fun getDetail(tmdbId: Int, type: MovieType) {
         detailLoading.value = true
-        viewModelScope.launch {
-            val result = apiRepository.searchDetail(imdbId)
-            result.fold(onSuccess = { data ->
-                detailResult.value = data
-            }, onFailure = {
-                Log.e("SearchViewModel", "failed to get detail :(")
-                error = true
-            })
+        viewModelScope.launch{
+            when(type) {
+                MovieType.Movie -> {
 
-            detailLoading.value = false
+                    val response = tmdbRepository.getMovieDetail(tmdbId)
+                    if(response != null) {
+                        movieDetail.value = response
+                    } else {
+                        // set error
+                    }
+                    detailLoading.value = false
+
+                }
+
+                MovieType.Series -> {
+                    val response = tmdbRepository.getTvDetail(tmdbId)
+                    if(response != null) {
+                        seriesDetail.value = response
+                    } else {
+                        // set error
+                    }
+
+                    detailLoading.value = false
+                }
+            }
         }
-    }
-
-    fun clearDetail() {
-
     }
 
 
     /**
-     * if the error has been toggled to true, then this will toggle it off
+     * adds the movie model to the database
+     * if the movie is a series then it will also query the api and fetch the imdb id
      */
-    fun toggleErrorOff() {
-        if(error == true) {
-            error = false
-        }
-    }
+    fun addModel(movie: Movie) = viewModelScope.launch {
+        var model = movie
 
-    fun addMovie(movie: Movie) = viewModelScope.launch {
-        repository.insertMovie(movie)
+        // if is a series fetch the imdb id from the api
+        if(movie.resultType == MovieType.Series) {
+            val response = tmdbRepository.getTvId(movie.tmdbId)
+            Log.d("com.zed.wannawatch", "$response")
+            if(response?.imdb_id != null) {
+                model = movie.copy(
+                    imdbID = response.imdb_id
+                )
+            } else {
+                error = true
+                errorMessage = "Failed to get IMDB id"
+            }
+
+        }
+
+        if(!error) {
+            repository.insertMovie(model)
+        }
     }
 }
 

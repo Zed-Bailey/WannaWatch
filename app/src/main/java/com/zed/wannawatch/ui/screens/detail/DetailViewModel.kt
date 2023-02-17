@@ -10,15 +10,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class DetailViewModel(private val repository: MovieRepository, private val movieId: String): ViewModel() {
+class DetailViewModel(private val repository: MovieRepository, movieId: String): ViewModel() {
 
     private val _movieState = MutableStateFlow<Movie?>(null)
     val movieState = _movieState.asStateFlow()
 
-
-    init {
-        getMovie(movieId)
-    }
 
     fun toggleWatched() {
         _movieState.update {
@@ -50,7 +46,7 @@ class DetailViewModel(private val repository: MovieRepository, private val movie
         update(_movieState.value)
     }
 
-    private fun getMovie(id: String) = viewModelScope.launch {
+    fun getMovie(id: String) = viewModelScope.launch {
         val movie = repository.getMovie(id)
         movie.collect { flow ->
             _movieState.update {

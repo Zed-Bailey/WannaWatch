@@ -6,22 +6,22 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
-import com.zed.wannawatch.services.api.models.SearchDetail
-import java.util.*
+import com.zed.wannawatch.services.api.models.tmdb.TvDetailResult
+import com.zed.wannawatch.services.repository.TMDBConstants
 
 @Composable
-fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: () -> Unit) {
-    val genres = selectedResult.Genre.split(",")
+fun SeriesDetailDialog(model: TvDetailResult, detailLoading: Boolean?, onAdd: () -> Unit, onClose: () -> Unit) {
+    val genres = model.genres.map { it.name }
 
     Card(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
@@ -37,6 +37,14 @@ fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: ()
 
 
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(onClick = onClose) {
+                    Icon(Icons.Rounded.Close, null)
+                }
+            }
 
             if (detailLoading == true) {
                 // todo extract to composable function
@@ -68,11 +76,11 @@ fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: ()
                             .background(Color.Gray)
                     )
                 }
-            }
-            else {
+            } else {
                 AsyncImage(
-                    model = selectedResult.Poster,
-                    contentDescription = "poster image for ${selectedResult.Title}",
+                    model = TMDBConstants.imageBasePath + (model.poster_path
+                        ?: model.backdrop_path),
+                    contentDescription = "poster image for ${model.name}",
                     modifier = Modifier
                         .aspectRatio(2f / 3f)
                         .height(170.dp)
@@ -81,7 +89,7 @@ fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: ()
 
 
                 Text(
-                    selectedResult.Title,
+                    model.name,
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
@@ -96,31 +104,22 @@ fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: ()
                         .padding(bottom = 10.dp),
                 ) {
 
-                    Row() {
-
-                        Text(text = selectedResult.Year)
-
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        Text(selectedResult.Type.replaceFirstChar {
-                            if (it.isLowerCase()) it.titlecase(
-                                Locale.ROOT
-                            ) else it.toString()
-                        }, fontWeight = FontWeight.Bold)
-                    }
-
+                    Text(text = model.first_air_date.take(4))
 
                     Spacer(modifier = Modifier.height(5.dp))
 
                     Text(
-                        if (selectedResult.Runtime != "N/A")
-                            "${selectedResult.Runtime} watch time"
+                        if(model.episode_run_time.firstOrNull() == null)
+                            "Runtime Unavailable"
                         else
-                            "Watch time unavailable"
+                            "Runtime ${model.episode_run_time.first()} mins"
                     )
 
+                    Spacer(modifier = Modifier.height(2.5.dp))
 
-                    Spacer(modifier = Modifier.height(5.dp))
+                    Text("${model.number_of_seasons} seasons ${model.number_of_episodes} episodes")
+
+                    Spacer(modifier = Modifier.height(2.5.dp))
 
                     LazyRow() {
                         items(genres.size) {
@@ -139,7 +138,7 @@ fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: ()
                     }
                 }
 
-                Text(selectedResult.Plot, style = MaterialTheme.typography.bodyMedium)
+                Text(model.overview, style = MaterialTheme.typography.bodyMedium)
 
                 Button(
                     onClick = onAdd,
@@ -159,7 +158,5 @@ fun SearchPopup(selectedResult: SearchDetail, detailLoading: Boolean?, onAdd: ()
 
 
         }
-
-
     }
 }

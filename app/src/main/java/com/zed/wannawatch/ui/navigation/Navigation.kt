@@ -12,6 +12,7 @@ import androidx.navigation.navArgument
 import com.zed.wannawatch.ui.screens.detail.DetailScreen
 import com.zed.wannawatch.ui.screens.main.HomeScreen
 import com.zed.wannawatch.ui.screens.search.SearchScreen
+import com.zed.wannawatch.ui.screens.watch.WatchScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,9 +60,25 @@ fun NavigationHost(navController: NavHostController) {
 
         // MARK: search screen
         composable(
-            route = Screen.SearchScreen.route,
+            route = Screen.SearchScreen.route ,
         ) {
             SearchScreen(navController)
+        }
+
+        // MARK: watch screen
+        composable(
+            route = Screen.WatchScreen.route + "/{imdbId}",
+            arguments = listOf(
+                navArgument("imdbId") {
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )
+        ) {
+            WatchScreen(
+                navController = navController,
+                imdbId = it.arguments?.getString("imdbId")!!
+            )
         }
     }
 }

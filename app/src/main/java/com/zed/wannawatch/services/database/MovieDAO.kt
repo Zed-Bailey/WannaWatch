@@ -13,8 +13,8 @@ interface MovieDAO  {
     @Query("Select * FROM Movie WHERE imdbID = :id")
     fun getMovie(id: String): Flow<Movie>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend  fun insertMovie(movie: Movie)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMovie(movie: Movie)
 
     @Delete
     suspend fun deleteMovie(movie: Movie)
