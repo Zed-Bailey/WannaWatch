@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun SearchFAB(modifier: Modifier, expanded: Boolean, onclick : () -> Unit) {
-
+//        https://itnext.io/floating-action-button-in-jetpack-compose-with-material-3-10ba8bff415
     ExtendedFloatingActionButton(
         modifier = modifier,
         text = {

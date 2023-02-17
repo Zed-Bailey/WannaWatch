@@ -16,6 +16,7 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -170,18 +171,23 @@ fun Search(
 
         if(movieResults == null && seriesResults == null) {
             val randomChance by remember {
-                mutableStateOf(Random.nextFloat() <= 0.05f)
+                mutableStateOf(Random.nextFloat() <= 1f)
             }
 
             if(randomChance) {
-                LottieAnimatedView(resId = R.raw.lottie_dancing_duck)
+                Box(Modifier.fillMaxSize(), contentAlignment = BottomStart) {
+                    Box(Modifier.width(50.dp).height(50.dp)) {
+                        LottieAnimatedView(resId = R.raw.lottie_dancing_duck)
+                    }
+                }
+
             }
         }
 
         if(viewModel.loading) {
 
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
-                LottieAnimatedView(resId = R.raw.lottie_hand_loading)
+                LottieAnimatedView(resId = R.raw.lottie_cinema_loading)
             }
 
         } else {
