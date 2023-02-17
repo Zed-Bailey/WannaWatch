@@ -197,7 +197,9 @@ fun Search(
                 movieResults?.let {
                     val results = it.results
                     if(results.isEmpty()) {
-                        Text("No results :(")
+                        Box(Modifier.fillMaxWidth().padding(top = 50.dp), contentAlignment = Center) {
+                            Text("No Movies Found", style= MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                        }
                     }
                     LazyVerticalGrid(
                         userScrollEnabled = true,
@@ -226,12 +228,15 @@ fun Search(
                         }
                     }
                 }
-            } else {
+            }
+            else {
                 // show series results
                 seriesResults?.let {
                     val results = it.results
                     if(results.isEmpty()) {
-                        Text("No results :(")
+                        Box(Modifier.fillMaxWidth().padding(top = 50.dp), contentAlignment = Center) {
+                            Text("No Series Found", style= MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                        }
                     }
                     LazyVerticalGrid(
                         userScrollEnabled = true,

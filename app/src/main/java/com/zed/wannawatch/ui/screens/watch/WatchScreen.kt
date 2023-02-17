@@ -170,7 +170,10 @@ fun Watch(
 
             if(s.results.isEmpty()) {
 
-                Text("No Servers Found :(")
+                Box(Modifier.fillMaxWidth().padding(top = 50.dp), contentAlignment = Center) {
+                    Text("No Servers Found", style= MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                }
+
 
             } else {
 
