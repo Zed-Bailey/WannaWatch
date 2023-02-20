@@ -3,7 +3,7 @@
 
 This app was built with Kotlin and was created to replace my ever growing list of recommended TV shows and movies
 
-The app was initally built with XML layouts (this version can be found on the xml_version branch) but with the new UI updated i decided to migrate it to compose and material 3.
+The app was initally built with XML layouts (this version can be found on the [xml_version branch](https://github.com/Zed-Bailey/WannaWatch/tree/xml_version)) but with the new UI updated i decided to migrate it to compose and material 3.
 I have found compose to be much nicer and far easier to iterate upon then XML layouts as the code is much more readable and intuitive.
 
 Retrofit was used to create a service that can make API calls to the [TMDB](https://www.themoviedb.org/documentation/api) api
@@ -27,7 +27,7 @@ TMDB (the movie database) was also used over OMDB (open movie data base) as it p
 
 
 # What's it look like?
-The previous version can be found on the xml_version branch to compare ui differences
+The previous version can be found on the [xml_version branch](https://github.com/Zed-Bailey/WannaWatch/tree/xml_version) to compare ui differences
 
 <style type="text/css">
 .tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
