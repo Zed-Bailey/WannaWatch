@@ -4,7 +4,6 @@
 This app was built with Kotlin and was created to replace my ever growing list of recommended TV shows and movies
 
 The app was initally built with XML layouts but with the new UI updated i migrated it to compose and material 3.
-
 I have found compose to be much nicer and far easier to iterate upon then XML layouts as the code is much more readable and intuitive.
 
 Retrofit was used to create a service that can make API calls to the [TMDB](https://www.themoviedb.org/documentation/api) api
