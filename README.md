@@ -25,6 +25,12 @@ these were all popular demands
 
 TMDB (the movie database) was also used over OMDB (open movie data base) as it provides more data on movies and shows 
 
+# Future improvements?
+
+- using hilt for dependency injection would help simplify the viewmodels
+- streaming the videos and/or downloading vides from inside the app, no external browsers
+- include more information in the search detail
+
 
 # What's it look like?
 The previous version can be found on the [xml_version branch](https://github.com/Zed-Bailey/WannaWatch/tree/xml_version) to compare ui differences
