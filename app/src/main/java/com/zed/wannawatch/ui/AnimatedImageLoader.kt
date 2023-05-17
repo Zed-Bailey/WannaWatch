@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -80,13 +81,15 @@ fun AnimatedImageLoader(url: String, width: Dp, height: Dp, contentDescription: 
                 .height(height)
                 .shimmer()
                 .background(MaterialTheme.colorScheme.surfaceVariant)
-        ) { }
+        ) {
+        }
 
     } else if (success) {
 
         Image(
             painter = painter,
             contentDescription = contentDescription,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .width(width)
                 .height(height)
