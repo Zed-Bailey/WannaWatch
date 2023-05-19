@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,12 +24,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -40,8 +43,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
-import com.zed.wannawatch.services.models.tmdb.discover.DiscoverMovies
+import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovieItem
+import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovies
+import com.zed.wannawatch.services.models.tmdb.trending.tv.TrendingTvShows
 import com.zed.wannawatch.services.utils.TMDBConstants
+import com.zed.wannawatch.ui.screens.search.AnimatedImageLoader
 
 @Composable
 fun DiscoverScreen(
@@ -49,7 +55,8 @@ fun DiscoverScreen(
     navController: NavController
 ) {
 
-    val data by viewModel.data
+    val movieData by viewModel.movieData
+    val tvData by viewModel.tvShowData
     val loading by viewModel.loading
     val errorState by viewModel.errorState
 
@@ -67,9 +74,8 @@ fun DiscoverScreen(
     else {
         when (val state = errorState) {
             is DiscoverViewModel.ErrorState.NoError -> {
-                data?.let {
-                    DiscoverView(it)
-                }
+
+                DiscoverView(movies = movieData!!, tvShows = tvData!!)
             }
             is DiscoverViewModel.ErrorState.Error -> {
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -87,32 +93,9 @@ fun DiscoverScreen(
 
 
 }
-//{
-//    "adult": false,
-//    "backdrop_path": "/nLBRD7UPR6GjmWQp6ASAfCTaWKX.jpg",
-//    "genre_ids": [
-//    16,
-//    10751,
-//    12,
-//    14,
-//    35
-//    ],
-//    "id": 502356,
-//    "original_language": "en",
-//    "original_title": "The Super Mario Bros. Movie",
-//    "overview": "While working underground to fix a water main, Brooklyn plumbers—and brothers—Mario and Luigi are transported down a mysterious pipe and wander into a magical new world. But when the brothers are separated, Mario embarks on an epic quest to find Luigi.",
-//    "popularity": 8501.774,
-//    "poster_path": "/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg",
-//    "release_date": "2023-04-05",
-//    "title": "The Super Mario Bros. Movie",
-//    "video": false,
-//    "vote_average": 7.6,
-//    "vote_count": 2570
-//},
-
 
 @Composable
-fun DiscoverView(data: DiscoverMovies) {
+fun DiscoverView(movies: TrendingMovies, tvShows: TrendingTvShows) {
     val listState = rememberLazyGridState()
     LazyVerticalGrid(
         state = listState,
@@ -125,39 +108,11 @@ fun DiscoverView(data: DiscoverMovies) {
     ) {
 
         item(span = { GridItemSpan(maxCurrentLineSpan) }) {
-
-            Box(modifier = Modifier.fillMaxWidth().height(300.dp)) {
-                AsyncImage(
-                    model = TMDBConstants.backdropBasePath + data.results.first().backdrop_path,
-                    contentDescription = "backdrop path",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                    alignment = Alignment.Center
-                )
-
-                Text(
-                    text = data.results.first().title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    softWrap = true,
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .background(
-                            Brush.verticalGradient(
-                                0F to Color.Transparent,
-                                .5F to Color.Black.copy(alpha = 0.5F),
-                                1F to Color.Black.copy(alpha = 0.8F)
-                            )
-                        )
-                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 24.dp),
-                    color = Color.White
-                )
-            }
+            HeaderMovieItem(movies.results.first())
         }
 
         item(span = { GridItemSpan(maxCurrentLineSpan) }) {
-            Trending()
+            Trending(movies, tvShows)
         }
 
         item(span = { GridItemSpan(maxCurrentLineSpan) }) { Spacer(modifier = Modifier.height(20.dp)) }
@@ -187,6 +142,66 @@ fun DiscoverView(data: DiscoverMovies) {
         }
     }
 }
+
+@Composable
+fun HeaderMovieItem(movie: TrendingMovieItem) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(300.dp)) {
+
+        AsyncImage(
+            model = TMDBConstants.backdropBasePath + movie.backdrop_path,
+            contentDescription = "backdrop path",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+            alignment = Alignment.Center
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomStart)
+                .background(
+                    Brush.verticalGradient(
+                        0F to Color.Transparent,
+                        .5F to Color.Black.copy(alpha = 0.5F),
+                        1F to Color.Black.copy(alpha = 0.8F)
+                    )
+                )
+                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 24.dp),
+        ) {
+            Text(
+                text = movie.title,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.SemiBold,
+                softWrap = true,
+                modifier = Modifier
+                    .fillMaxWidth(),
+//                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 24.dp),
+                color = Color.White
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.Start
+            ) {
+
+                Button(
+                    modifier = Modifier.padding(end = 5.dp),
+                    onClick = { /*TODO add */ }) {
+                    Text("Add")
+                }
+
+                OutlinedButton(onClick = { /*TODO details */ }) {
+                    Text("Details")
+                }
+            }
+        }
+
+
+    }
+
+}
+
 
 @Composable
 private fun LatestTrailers() {
@@ -234,24 +249,58 @@ private fun LatestTrailers() {
     }
 }
 @Composable
-fun Trending() {
+fun Trending(movies: TrendingMovies, tvShows: TrendingTvShows) {
     Column() {
-        Text("Trending", style = MaterialTheme.typography.headlineSmall)
+        Text("Trending Movies", style = MaterialTheme.typography.headlineSmall)
 
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             item{ Spacer(modifier = Modifier.width(5.dp))}
 
-            for (i in 0..10) {
-                item(key = i) {
+            for (movie in movies.results) {
+                item(key = movie.id) {
                     Box(
                         modifier = Modifier
                             .height(170.dp)
                             .width(128.dp)
-                            .shimmer()
-                            .background(Color.Gray, RoundedCornerShape(15))
-                    ) {}
+                            .clip(RoundedCornerShape(10.dp)),
+                        contentAlignment = Alignment.Center
+
+                    ) {
+                        AnimatedImageLoader(
+                            url = TMDBConstants.imageBasePath + movie.poster_path,
+                            width = 128.dp,
+                            height = 170.dp
+                        )
+                    }
+                }
+
+            }
+        }
+
+        Spacer(modifier = Modifier.height(15.dp))
+        Text("Trending Tv Shows", style = MaterialTheme.typography.headlineSmall)
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+
+            for (show in tvShows.results) {
+                item(key = show.id) {
+                    Box(
+                        modifier = Modifier
+                            .height(170.dp)
+                            .width(128.dp)
+                            .clip(RoundedCornerShape(10.dp)),
+                        contentAlignment = Alignment.Center
+
+                    ) {
+                        AnimatedImageLoader(
+                            url = TMDBConstants.imageBasePath + show.poster_path,
+                            width = 128.dp,
+                            height = 170.dp
+                        )
+                    }
                 }
 
             }
