@@ -2,6 +2,7 @@ package com.zed.wannawatch.services.repository
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.zed.wannawatch.services.api.models.tmdb.*
+import com.zed.wannawatch.services.api.models.tmdb.discover.DiscoverMovies
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -28,6 +29,10 @@ interface TMDBService {
 
     @GET("/3/tv/{tmdbId}/external_ids")
     suspend fun getTvIds(@Path("tmdbId") tmdbId: Int, @Query("api_key") key: String): Response<TvExternalIds>
+
+
+    @GET("/3/discover/movie")
+    suspend fun getDiscoverMovies(@Query("api_key") key: String): Response<DiscoverMovies>
 }
 
 object TMDBServiceHelper {
@@ -35,7 +40,6 @@ object TMDBServiceHelper {
     private val jsonProperties = Json {
         ignoreUnknownKeys = true
         coerceInputValues = true
-        this.encodeDefaults = true
 
     }
 

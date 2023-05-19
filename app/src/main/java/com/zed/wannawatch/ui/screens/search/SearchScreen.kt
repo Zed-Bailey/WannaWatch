@@ -38,8 +38,6 @@ import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.services.repository.TMDBConstants
 import com.zed.wannawatch.ui.LottieAnimatedView
-import com.zed.wannawatch.ui.ScaffoldState
-import com.zed.wannawatch.ui.WannaWatchScaffold
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.random.Random
@@ -53,17 +51,17 @@ fun SearchScreen(
     )
 ) {
 
-    WannaWatchScaffold(
-        scaffoldState = ScaffoldState(
-            shouldShowBack = true,
-            onBackPressed = {
-                navController.navigateUp()
-            },
-            actions = { }
-        )
-    ) {
+//    WannaWatchScaffold(
+//        scaffoldState = ScaffoldState(
+//            shouldShowBack = true,
+//            onBackPressed = {
+//                navController.navigateUp()
+//            },
+//            actions = { }
+//        )
+//    ) {
         Search(viewModel = viewModel)
-    }
+//    }
 
 }
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)

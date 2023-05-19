@@ -1,11 +1,8 @@
 package com.zed.wannawatch.ui.screens.detail
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -23,8 +20,6 @@ import androidx.navigation.NavController
 import com.zed.wannawatch.R
 import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.models.Movie
-import com.zed.wannawatch.ui.ScaffoldState
-import com.zed.wannawatch.ui.WannaWatchScaffold
 import com.zed.wannawatch.ui.screens.search.AnimatedImageLoader
 
 @Composable
@@ -45,26 +40,26 @@ fun DetailScreen(
         viewModel.getMovie(movieId)
     }
 
-    WannaWatchScaffold(
-        scaffoldState = ScaffoldState(
-            shouldShowBack = true,
-            onBackPressed = {
-                navController.navigateUp()
-            },
-            actions = {
-                IconButton(
-                    onClick = {
-                        Log.i("com.zed.wannawatch", "delete pressed")
-                        viewModel.delete(movieState)
-                        navController.popBackStack()
-                    }
-                ) {
-                    Icon(Icons.Rounded.Delete, contentDescription = null)
-                }
-            }
-
-        )
-    ) {
+//    WannaWatchScaffold(
+//        scaffoldState = ScaffoldState(
+//            shouldShowBack = true,
+//            onBackPressed = {
+//                navController.navigateUp()
+//            },
+//            actions = {
+//                IconButton(
+//                    onClick = {
+//                        Log.i("com.zed.wannawatch", "delete pressed")
+//                        viewModel.delete(movieState)
+//                        navController.popBackStack()
+//                    }
+//                ) {
+//                    Icon(Icons.Rounded.Delete, contentDescription = null)
+//                }
+//            }
+//
+//        )
+//    ) {
 
 
         movieState?.let {movie ->
@@ -77,12 +72,7 @@ fun DetailScreen(
             )
         }
 
-
-
-
-
-
-    }
+//    }
 
 
 }
@@ -134,20 +124,20 @@ fun Details(
             )
         }
 
-        FilledTonalButton(
-            shape = RoundedCornerShape(10.dp),
-            onClick = {
-                onWatchClicked()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(40.dp, 5.dp)
-                .align(CenterHorizontally),
-            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
-
-        ) {
-            Text(text = "Watch Online", color = MaterialTheme.colorScheme.onSecondary)
-        }
+//        FilledTonalButton(
+//            shape = RoundedCornerShape(10.dp),
+//            onClick = {
+//                onWatchClicked()
+//            },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(40.dp, 5.dp)
+//                .align(CenterHorizontally),
+//            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+//
+//        ) {
+//            Text(text = "Watch Online", color = MaterialTheme.colorScheme.onSecondary)
+//        }
 
         Spacer(Modifier.height(25.dp))
 

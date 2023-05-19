@@ -11,9 +11,13 @@ import com.zed.wannawatch.services.MovieRatingFilter
 import com.zed.wannawatch.services.models.Movie
 import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.services.repository.MovieRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel(private val repository: MovieRepository): ViewModel() {
+
+@HiltViewModel
+class HomeViewModel @Inject constructor(private val repository: MovieRepository): ViewModel() {
 
 
     val movies = MutableLiveData<List<Movie>>()

@@ -1,17 +1,43 @@
 package com.zed.wannawatch.ui.screens.watch
 
 
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.rounded.ArrowDropUp
+import androidx.compose.material.icons.rounded.ArrowRight
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterEnd
@@ -29,8 +55,6 @@ import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.api.models.seapi.ServerResult
 import com.zed.wannawatch.services.models.MovieType
 import com.zed.wannawatch.ui.LottieAnimatedView
-import com.zed.wannawatch.ui.ScaffoldState
-import com.zed.wannawatch.ui.WannaWatchScaffold
 
 
 @Composable
@@ -47,30 +71,30 @@ fun WatchScreen(navController: NavController,
         viewModel.getModel((context.applicationContext as MovieApplication).repository, imdbId)
     }
 
-    WannaWatchScaffold(
-        scaffoldState = ScaffoldState(
-            shouldShowBack = true,
-            onBackPressed = {
-                navController.navigateUp()
-            },
-            actions = {
-                viewModel.model.value?.let {
-                    if(it.resultType == MovieType.Series) {
-                        // show seasons refresh action item
-                        RefreshActionItem {
-                            if(it.tmdbId != 0) {
-                                viewModel.refreshSeasons(it.tmdbId)
-                            } else {
-                                Toast.makeText(context, "Error: please re-add this series", Toast.LENGTH_LONG).show()
-                            }
-                        }
-                    }
-                }
-            }
-        )
-    ) {
-        Watch(viewModel = viewModel)
-    }
+//    WannaWatchScaffold(
+//        scaffoldState = ScaffoldState(
+//            shouldShowBack = true,
+//            onBackPressed = {
+//                navController.navigateUp()
+//            },
+//            actions = {
+//                viewModel.model.value?.let {
+//                    if(it.resultType == MovieType.Series) {
+//                        // show seasons refresh action item
+//                        RefreshActionItem {
+//                            if(it.tmdbId != 0) {
+//                                viewModel.refreshSeasons(it.tmdbId)
+//                            } else {
+//                                Toast.makeText(context, "Error: please re-add this series", Toast.LENGTH_LONG).show()
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        )
+//    ) {
+//        Watch(viewModel = viewModel)
+//    }
 
 
 }

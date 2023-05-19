@@ -4,12 +4,12 @@ import androidx.annotation.WorkerThread
 import com.zed.wannawatch.services.database.MovieDAO
 import com.zed.wannawatch.services.models.Movie
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class MovieRepository(private val movieDAO: MovieDAO) {
+class MovieRepository @Inject constructor(private val movieDAO: MovieDAO) {
 
 
     @WorkerThread
-    @Suppress("RedundantSuspendModifier")
     suspend fun insertMovie(movie: Movie) {
         movieDAO.insertMovie(movie)
     }

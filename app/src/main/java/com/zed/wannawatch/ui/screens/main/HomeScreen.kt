@@ -12,32 +12,23 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.zed.wannawatch.services.HomeScreenWatchedFilter
 import com.zed.wannawatch.services.MediaTypeFilter
-import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.MovieRatingFilter
 import com.zed.wannawatch.services.models.MovieType
-import com.zed.wannawatch.ui.ScaffoldState
-import com.zed.wannawatch.ui.WannaWatchScaffold
 import com.zed.wannawatch.ui.navigation.Screen
 
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository)
-    )
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
 
-    WannaWatchScaffold(scaffoldState = ScaffoldState(
-        actions = {}
-    )) {
         Home(
             viewModel = viewModel,
             movieClicked = {
@@ -47,8 +38,6 @@ fun HomeScreen(
                 navController.navigate(Screen.SearchScreen.route)
             }
         )
-    }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,8 +47,6 @@ fun Home(
     movieClicked: (String) -> Unit,
     searchClicked: () -> Unit
 ) {
-
-//    val movies by viewModel.movies.collectAsState(initial = listOf())
 
     val movies by viewModel.movies.observeAsState()
     val dataLoading = viewModel.dataLoading
@@ -165,7 +152,10 @@ fun Home(
                 }
             }
             else if (movies?.isEmpty() == true) {
-                Box(Modifier.fillMaxWidth().padding(top = 50.dp), contentAlignment = Center) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 50.dp), contentAlignment = Center) {
                     Text("No Movies or Series added", style= MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp))
                 }
 
@@ -190,13 +180,13 @@ fun Home(
 
 
 
-        SearchFAB(modifier = Modifier
-            .align(Alignment.BottomEnd)
-            .padding(20.dp),
-            expanded = viewModel.fabExpanded.value
-        ) {
-            searchClicked()
-        }
+//        SearchFAB(modifier = Modifier
+//            .align(Alignment.BottomEnd)
+//            .padding(20.dp),
+//            expanded = viewModel.fabExpanded.value
+//        ) {
+//            searchClicked()
+//        }
     }
 }
 
