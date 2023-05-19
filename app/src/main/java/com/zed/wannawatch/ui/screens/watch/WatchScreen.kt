@@ -53,7 +53,7 @@ import androidx.navigation.NavController
 import com.zed.wannawatch.R
 import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.api.models.seapi.ServerResult
-import com.zed.wannawatch.services.models.MovieType
+import com.zed.wannawatch.services.models.movie.MovieType
 import com.zed.wannawatch.ui.LottieAnimatedView
 
 

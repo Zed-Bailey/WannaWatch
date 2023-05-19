@@ -13,9 +13,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.zed.wannawatch.services.api.models.seapi.ServerResult
 import com.zed.wannawatch.services.api.models.seapi.Servers
-import com.zed.wannawatch.services.api.models.tmdb.Season
-import com.zed.wannawatch.services.models.Movie
-import com.zed.wannawatch.services.models.MovieType
+import com.zed.wannawatch.services.models.movie.Movie
+import com.zed.wannawatch.services.models.movie.MovieType
+import com.zed.wannawatch.services.models.tmdb.Season
 import com.zed.wannawatch.services.repository.MovieRepository
 import com.zed.wannawatch.services.repository.TMDBRepositoryImpl
 import kotlinx.coroutines.launch

@@ -3,7 +3,7 @@ package com.zed.wannawatch.ui.screens.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.zed.wannawatch.services.models.Movie
+import com.zed.wannawatch.services.models.movie.Movie
 import com.zed.wannawatch.services.repository.MovieRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

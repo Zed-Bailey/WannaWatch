@@ -1,7 +1,7 @@
 package com.zed.wannawatch.services.database
 
 import androidx.room.*
-import com.zed.wannawatch.services.models.Movie
+import com.zed.wannawatch.services.models.movie.Movie
 import kotlinx.coroutines.flow.Flow
 
 @Dao

@@ -1,4 +1,4 @@
-package com.zed.wannawatch.services.models
+package com.zed.wannawatch.services.models.movie
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

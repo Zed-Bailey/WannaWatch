@@ -19,7 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.zed.wannawatch.R
 import com.zed.wannawatch.services.MovieApplication
-import com.zed.wannawatch.services.models.Movie
+import com.zed.wannawatch.services.models.movie.Movie
 import com.zed.wannawatch.ui.screens.search.AnimatedImageLoader
 
 @Composable

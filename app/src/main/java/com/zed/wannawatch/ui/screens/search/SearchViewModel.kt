@@ -9,9 +9,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.zed.wannawatch.services.api.models.*
-import com.zed.wannawatch.services.api.models.tmdb.*
-import com.zed.wannawatch.services.models.Movie
-import com.zed.wannawatch.services.models.MovieType
+import com.zed.wannawatch.services.models.movie.Movie
+import com.zed.wannawatch.services.models.movie.MovieType
+import com.zed.wannawatch.services.models.tmdb.MovieDetailResult
+import com.zed.wannawatch.services.models.tmdb.MovieResult
+import com.zed.wannawatch.services.models.tmdb.TMDBSearchResult
+import com.zed.wannawatch.services.models.tmdb.TvDetailResult
+import com.zed.wannawatch.services.models.tmdb.TvResult
 import com.zed.wannawatch.services.repository.*
 import kotlinx.coroutines.launch
 

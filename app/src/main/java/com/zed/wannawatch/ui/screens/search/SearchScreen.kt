@@ -34,9 +34,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.zed.wannawatch.R
 import com.zed.wannawatch.services.MovieApplication
-import com.zed.wannawatch.services.models.Movie
-import com.zed.wannawatch.services.models.MovieType
-import com.zed.wannawatch.services.repository.TMDBConstants
+import com.zed.wannawatch.services.models.movie.Movie
+import com.zed.wannawatch.services.models.movie.MovieType
+import com.zed.wannawatch.services.utils.TMDBConstants
 import com.zed.wannawatch.ui.LottieAnimatedView
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

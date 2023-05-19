@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zed.wannawatch.services.models.Movie
+import com.zed.wannawatch.services.models.movie.Movie
 
 
 @OptIn(ExperimentalFoundationApi::class)

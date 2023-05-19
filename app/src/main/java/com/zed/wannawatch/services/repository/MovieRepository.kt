@@ -2,7 +2,7 @@ package com.zed.wannawatch.services.repository
 
 import androidx.annotation.WorkerThread
 import com.zed.wannawatch.services.database.MovieDAO
-import com.zed.wannawatch.services.models.Movie
+import com.zed.wannawatch.services.models.movie.Movie
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

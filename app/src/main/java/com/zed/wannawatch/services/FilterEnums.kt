@@ -1,6 +1,6 @@
 package com.zed.wannawatch.services
 
-import com.zed.wannawatch.services.models.MovieType
+import com.zed.wannawatch.services.models.movie.MovieType
 
 // todo rename
 enum class HomeScreenWatchedFilter(val watched: Boolean? = null) {

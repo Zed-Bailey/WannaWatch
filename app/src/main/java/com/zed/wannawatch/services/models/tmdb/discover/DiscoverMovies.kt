@@ -1,5 +1,8 @@
-package com.zed.wannawatch.services.api.models.tmdb.discover
+package com.zed.wannawatch.services.models.tmdb.discover
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class DiscoverMovies(
     val page: Int,
     val results: List<DiscoverItem>,

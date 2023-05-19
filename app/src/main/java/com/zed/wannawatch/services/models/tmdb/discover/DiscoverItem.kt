@@ -1,17 +1,17 @@
-package com.zed.wannawatch.services.api.models.tmdb
+package com.zed.wannawatch.services.models.tmdb.discover
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MovieResult(
+data class DiscoverItem(
     val adult: Boolean,
-    val backdrop_path: String?,
-    val genre_ids: List<Int>,
+    val backdrop_path: String,
+    val genre_ids: ArrayList<Int>,
     val id: Int,
     val original_language: String,
     val original_title: String,
     val overview: String,
     val popularity: Double,
-    val poster_path: String?,
+    val poster_path: String,
     val release_date: String,
     val title: String,
     val video: Boolean,

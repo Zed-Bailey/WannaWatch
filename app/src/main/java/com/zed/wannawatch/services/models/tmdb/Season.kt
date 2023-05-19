@@ -1,4 +1,4 @@
-package com.zed.wannawatch.services.api.models.tmdb
+package com.zed.wannawatch.services.models.tmdb
 import kotlinx.serialization.Serializable
 @Serializable
 data class Season(

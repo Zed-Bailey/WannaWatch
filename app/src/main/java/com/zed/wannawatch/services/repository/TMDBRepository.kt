@@ -1,12 +1,12 @@
 package com.zed.wannawatch.services.repository
 
-import com.zed.wannawatch.services.api.models.tmdb.MovieDetailResult
-import com.zed.wannawatch.services.api.models.tmdb.MovieResult
-import com.zed.wannawatch.services.api.models.tmdb.TMDBSearchResult
-import com.zed.wannawatch.services.api.models.tmdb.TvDetailResult
-import com.zed.wannawatch.services.api.models.tmdb.TvExternalIds
-import com.zed.wannawatch.services.api.models.tmdb.TvResult
-import com.zed.wannawatch.services.api.models.tmdb.discover.DiscoverMovies
+import com.zed.wannawatch.services.models.tmdb.MovieDetailResult
+import com.zed.wannawatch.services.models.tmdb.MovieResult
+import com.zed.wannawatch.services.models.tmdb.TMDBSearchResult
+import com.zed.wannawatch.services.models.tmdb.TvDetailResult
+import com.zed.wannawatch.services.models.tmdb.TvExternalIds
+import com.zed.wannawatch.services.models.tmdb.TvResult
+import com.zed.wannawatch.services.models.tmdb.discover.DiscoverMovies
 
 interface TMDBRepository {
 

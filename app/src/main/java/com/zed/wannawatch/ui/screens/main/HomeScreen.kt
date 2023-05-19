@@ -19,7 +19,7 @@ import androidx.navigation.NavController
 import com.zed.wannawatch.services.HomeScreenWatchedFilter
 import com.zed.wannawatch.services.MediaTypeFilter
 import com.zed.wannawatch.services.MovieRatingFilter
-import com.zed.wannawatch.services.models.MovieType
+import com.zed.wannawatch.services.models.movie.MovieType
 import com.zed.wannawatch.ui.navigation.Screen
 
 
