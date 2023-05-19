@@ -6,7 +6,8 @@ import com.zed.wannawatch.services.models.tmdb.TMDBSearchResult
 import com.zed.wannawatch.services.models.tmdb.TvDetailResult
 import com.zed.wannawatch.services.models.tmdb.TvExternalIds
 import com.zed.wannawatch.services.models.tmdb.TvResult
-import com.zed.wannawatch.services.models.tmdb.discover.DiscoverMovies
+import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovies
+import com.zed.wannawatch.services.models.tmdb.trending.tv.TrendingTvShows
 
 interface TMDBRepository {
 
@@ -20,5 +21,8 @@ interface TMDBRepository {
 
     suspend fun getTvId(id: Int): TvExternalIds?
 
-    suspend fun discoverMovies(): DiscoverMovies?
+    suspend fun discoverMovies(): TrendingMovies?
+
+    suspend fun discoverTv(): TrendingTvShows?
+
 }

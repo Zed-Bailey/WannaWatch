@@ -7,7 +7,8 @@ import com.zed.wannawatch.services.models.tmdb.TMDBSearchResult
 import com.zed.wannawatch.services.models.tmdb.TvDetailResult
 import com.zed.wannawatch.services.models.tmdb.TvExternalIds
 import com.zed.wannawatch.services.models.tmdb.TvResult
-import com.zed.wannawatch.services.models.tmdb.discover.DiscoverMovies
+import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovies
+import com.zed.wannawatch.services.models.tmdb.trending.tv.TrendingTvShows
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -36,8 +37,11 @@ interface TMDBService {
     suspend fun getTvIds(@Path("tmdbId") tmdbId: Int, @Query("api_key") key: String): Response<TvExternalIds>
 
 
-    @GET("/3/discover/movie")
-    suspend fun getDiscoverMovies(@Query("api_key") key: String): Response<DiscoverMovies>
+    @GET("/3/trending/movie/week")
+    suspend fun getTrendingMovies(@Query("api_key") key: String): Response<TrendingMovies>
+
+    @GET("/3/trending/tv/week")
+    suspend fun getTrendingTv(@Query("api_key") key: String): Response<TrendingTvShows>
 }
 
 object TMDBServiceHelper {

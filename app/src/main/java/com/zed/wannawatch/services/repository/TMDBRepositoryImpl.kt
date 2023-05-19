@@ -7,7 +7,8 @@ import com.zed.wannawatch.services.models.tmdb.TMDBSearchResult
 import com.zed.wannawatch.services.models.tmdb.TvDetailResult
 import com.zed.wannawatch.services.models.tmdb.TvExternalIds
 import com.zed.wannawatch.services.models.tmdb.TvResult
-import com.zed.wannawatch.services.models.tmdb.discover.DiscoverMovies
+import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovies
+import com.zed.wannawatch.services.models.tmdb.trending.tv.TrendingTvShows
 
 
 class TMDBRepositoryImpl(
@@ -69,12 +70,20 @@ class TMDBRepositoryImpl(
         return null
     }
 
-    override suspend fun discoverMovies(): DiscoverMovies? {
-        val response = service.getDiscoverMovies(tmdb_key)
+    override suspend fun discoverMovies(): TrendingMovies? {
+        val response = service.getTrendingMovies(tmdb_key)
         if(response.isSuccessful) {
             return response.body()
         }
 
+        return null
+    }
+
+    override suspend fun discoverTv(): TrendingTvShows? {
+        val response = service.getTrendingTv(tmdb_key)
+        if(response.isSuccessful) {
+            return response.body()
+        }
         return null
     }
 

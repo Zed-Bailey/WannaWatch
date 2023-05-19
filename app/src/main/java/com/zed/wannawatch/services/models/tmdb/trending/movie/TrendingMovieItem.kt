@@ -1,8 +1,8 @@
-package com.zed.wannawatch.services.models.tmdb.discover
+package com.zed.wannawatch.services.models.tmdb.trending.movie
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DiscoverItem(
+data class TrendingMovieItem(
     val adult: Boolean,
     val backdrop_path: String,
     val genre_ids: ArrayList<Int>,
