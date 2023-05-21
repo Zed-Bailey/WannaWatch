@@ -7,8 +7,10 @@ import com.zed.wannawatch.services.models.tmdb.TMDBSearchResult
 import com.zed.wannawatch.services.models.tmdb.TvDetailResult
 import com.zed.wannawatch.services.models.tmdb.TvExternalIds
 import com.zed.wannawatch.services.models.tmdb.TvResult
+import com.zed.wannawatch.services.models.tmdb.findById.FindByIdResults
 import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovies
 import com.zed.wannawatch.services.models.tmdb.trending.tv.TrendingTvShows
+import com.zed.wannawatch.services.models.tmdb.videos.MovieTrailer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -20,6 +22,9 @@ import retrofit2.http.Query
 
 
 interface TMDBService {
+
+    @GET("/3/find/{external_id}?external_source=imdb_id")
+    suspend fun findTmdbIdFromImdbId(@Path("external_id") imdbId: String, @Query("api_key") key: String) : Response<FindByIdResults>
     @GET("/3/search/movie")
     suspend fun searchMovies(@Query("api_key") key: String, @Query("query") query: String): Response<TMDBSearchResult<MovieResult>>
 
@@ -42,6 +47,10 @@ interface TMDBService {
 
     @GET("/3/trending/tv/week")
     suspend fun getTrendingTv(@Query("api_key") key: String): Response<TrendingTvShows>
+
+
+    @GET("/3/movie/{movie_id}/videos")
+    suspend fun getMovieTrailers(@Query("api_key") key: String, @Path("movie_id") tmdbId: Int) : Response<List<MovieTrailer>>
 }
 
 object TMDBServiceHelper {
