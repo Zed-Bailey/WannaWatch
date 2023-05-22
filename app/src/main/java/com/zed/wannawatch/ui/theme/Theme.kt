@@ -94,9 +94,9 @@ fun WannaWatchTheme(
 //    https://google.github.io/accompanist/systemuicontroller/
 //    systemUiController.setSystemBarsColor(colorScheme.background, darkIcons = !isSystemInDarkTheme())
 
-    val colorScheme = LightColors
+    val colorScheme = DarkColors
     val systemUiController = rememberSystemUiController()
-    systemUiController.setSystemBarsColor(colorScheme.background, darkIcons = true)
+    systemUiController.setSystemBarsColor(colorScheme.background, darkIcons = false)
 
   MaterialTheme(
     colorScheme = colorScheme,
