@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,21 +31,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovieItem
 import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovies
 import com.zed.wannawatch.services.models.tmdb.trending.tv.TrendingTvShows
 import com.zed.wannawatch.services.utils.TMDBConstants
+import com.zed.wannawatch.ui.ErrorState
+import com.zed.wannawatch.ui.screens.BackDropImage
 import com.zed.wannawatch.ui.screens.search.AnimatedImageLoader
 
 @Composable
@@ -73,11 +70,11 @@ fun DiscoverScreen(
     }
     else {
         when (val state = errorState) {
-            is DiscoverViewModel.ErrorState.NoError -> {
-
+            is ErrorState.NoError -> {
                 DiscoverView(movies = movieData!!, tvShows = tvData!!)
             }
-            is DiscoverViewModel.ErrorState.Error -> {
+
+            is ErrorState.Error -> {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(state.msg)
@@ -104,7 +101,7 @@ fun DiscoverView(movies: TrendingMovies, tvShows: TrendingTvShows) {
         verticalArrangement = Arrangement.spacedBy(5.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(5.dp)
+            .padding(vertical = 5.dp)
     ) {
 
         item(span = { GridItemSpan(maxCurrentLineSpan) }) {
@@ -145,61 +142,18 @@ fun DiscoverView(movies: TrendingMovies, tvShows: TrendingTvShows) {
 
 @Composable
 fun HeaderMovieItem(movie: TrendingMovieItem) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(300.dp)) {
 
-        AsyncImage(
-            model = TMDBConstants.backdropBasePath + movie.backdrop_path,
-            contentDescription = "backdrop path",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-            alignment = Alignment.Center
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomStart)
-                .background(
-                    Brush.verticalGradient(
-                        0F to Color.Transparent,
-                        .5F to Color.Black.copy(alpha = 0.5F),
-                        1F to Color.Black.copy(alpha = 0.8F)
-                    )
-                )
-                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 24.dp),
-        ) {
-            Text(
-                text = movie.title,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold,
-                softWrap = true,
-                modifier = Modifier
-                    .fillMaxWidth(),
-//                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 24.dp),
-                color = Color.White
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.Start
-            ) {
-
-                Button(
-                    modifier = Modifier.padding(end = 5.dp),
-                    onClick = { /*TODO add */ }) {
-                    Text("Add")
-                }
-
-                OutlinedButton(onClick = { /*TODO details */ }) {
-                    Text("Details")
-                }
-            }
+    BackDropImage(url = TMDBConstants.backdropBasePath + movie.backdrop_path, title = movie.title) {
+        Button(
+            modifier = Modifier.padding(end = 5.dp),
+            onClick = { /*TODO add */ }) {
+            Text("Add")
         }
 
-
+        OutlinedButton(onClick = { /*TODO details */ }) {
+            Text("Details")
+        }
     }
-
 }
 
 

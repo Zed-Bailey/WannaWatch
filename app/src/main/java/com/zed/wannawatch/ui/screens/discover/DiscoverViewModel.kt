@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovies
 import com.zed.wannawatch.services.models.tmdb.trending.tv.TrendingTvShows
 import com.zed.wannawatch.services.repository.TMDBRepository
+import com.zed.wannawatch.ui.ErrorState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,10 +16,7 @@ class DiscoverViewModel @Inject constructor(
     private val tmdbRepository: TMDBRepository
 ):ViewModel() {
 
-    sealed class ErrorState {
-        object NoError: ErrorState()
-        data class Error(val msg: String): ErrorState()
-    }
+
 
     var loading = mutableStateOf(true)
     var errorState = mutableStateOf<ErrorState>(ErrorState.NoError)
