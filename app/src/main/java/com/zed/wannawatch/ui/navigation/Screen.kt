@@ -5,7 +5,6 @@ sealed class Screen(val route: String) {
     object SearchScreen : Screen("search_screen")
     object DetailScreen: Screen("detail_screen")
 
-    object WatchScreen: Screen("watch_screen")
 
     object DiscoverScreen : Screen("discover_screen")
     object SettingsScreen : Screen("settings_screen")
