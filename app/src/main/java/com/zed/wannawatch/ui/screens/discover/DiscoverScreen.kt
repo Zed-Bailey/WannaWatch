@@ -146,11 +146,17 @@ fun HeaderMovieItem(movie: TrendingMovieItem) {
     BackDropImage(url = TMDBConstants.backdropBasePath + movie.backdrop_path, title = movie.title) {
         Button(
             modifier = Modifier.padding(end = 5.dp),
-            onClick = { /*TODO add */ }) {
+            onClick = { /*TODO add */ },
+            shape = RoundedCornerShape(5.dp)
+
+        ) {
             Text("Add")
         }
 
-        OutlinedButton(onClick = { /*TODO details */ }) {
+        OutlinedButton(
+            onClick = { /*TODO details */ },
+            shape = RoundedCornerShape(5.dp)
+        ) {
             Text("Details")
         }
     }
@@ -218,7 +224,7 @@ fun Trending(movies: TrendingMovies, tvShows: TrendingTvShows) {
                         modifier = Modifier
                             .height(170.dp)
                             .width(128.dp)
-                            .clip(RoundedCornerShape(10.dp)),
+                            .clip(RoundedCornerShape(5.dp)),
                         contentAlignment = Alignment.Center
 
                     ) {
