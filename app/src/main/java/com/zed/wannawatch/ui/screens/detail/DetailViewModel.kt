@@ -163,8 +163,8 @@ class DetailViewModel @Inject constructor(
                 }
             }
         }
-
     }
+
 
     private fun update(movie: Movie?) = viewModelScope.launch{
         movie?.let {
@@ -181,8 +181,6 @@ class DetailViewModel @Inject constructor(
                 null
             }
         }
-
-
 
     }
 }

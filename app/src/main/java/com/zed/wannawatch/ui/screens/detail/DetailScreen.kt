@@ -37,17 +37,23 @@ fun DetailScreen(
 
     val detailState by viewModel.movieState.collectAsState()
 
+    var deleteDialogOpen by remember {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(Unit) {
         viewModel.getMovie()
     }
+
 
     LaunchedEffect(key1 = true) {
         onComposing(
             AppBarState(
                 actions = {
                     IconButton(onClick = {
-                        viewModel.delete(detailState)
-                        navController.popBackStack()
+                        deleteDialogOpen = true
+//                        viewModel.delete(detailState)
+//                        navController.popBackStack()
                     }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
@@ -66,8 +72,46 @@ fun DetailScreen(
         )
     }
 
-    detailState?.let {movie ->
-        when(movie.resultType) {
+    if(deleteDialogOpen) {
+        AlertDialog(
+            onDismissRequest = {
+                deleteDialogOpen = false
+            },
+            title = {
+                Text("Confirm Delete")
+            },
+            text = {
+                Text("Are you sure you want to delete: ${detailState?.title}")
+            },
+            confirmButton = {
+
+                Button(
+                    onClick = {
+                        viewModel.delete(detailState)
+                        deleteDialogOpen = false
+                        navController.navigateUp()
+                    },
+                    shape = RoundedCornerShape(5.dp)
+                ) {
+                    Text("Confirm", fontWeight = FontWeight.SemiBold)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        deleteDialogOpen = false
+                    },
+                    shape = RoundedCornerShape(5.dp)
+                ) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+    
+
+    detailState?.let { movie ->
+        when (movie.resultType) {
             MovieType.Movie -> {
                 MovieDetailScreen(movie = movie, viewModel = viewModel)
             }
@@ -77,6 +121,7 @@ fun DetailScreen(
             }
         }
     }
+
 }
 
 
@@ -103,7 +148,6 @@ fun TvDetailScreen(
         BasicDetailView(movie, viewModel)
 
     } else {
-
 
         Column(
             modifier = Modifier
@@ -132,31 +176,13 @@ fun TvDetailScreen(
                     .fillMaxWidth()
                     .padding(start = 15.dp, top = 10.dp, 15.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    AnimatedImageLoader(url = movie.posterUrl, width = 128.dp, height = 170.dp)
-
-                    Spacer(modifier = Modifier.width(15.dp))
-
-                    Column(
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            "${tvDetail?.seasons?.size} seasons",
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                        Text(
-                            "${tvDetail?.genresString}",
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                        Text(
-                            "${tvDetail?.first_air_date}",
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-                }
+                
+                InformationSection(
+                    posterUrl = movie.posterUrl,
+                    text1 = "${tvDetail?.seasons?.size} seasons",
+                    genres = tvDetail?.genresString,
+                    date = tvDetail?.first_air_date
+                )
 
 
                 Text(tvDetail?.overview ?: "")
@@ -173,37 +199,19 @@ fun TvDetailScreen(
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                Text(
-                    "Series Notes",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Left,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp, 0.dp)
+                NotesSection(
+                    value = movie.notes,
+                    onValueChanged = { viewModel.updateNotesText(it) },
+                    header = "Series Notes"
                 )
 
-                OutlinedTextField(
-                    colors = TextFieldDefaults.outlinedTextFieldColors(MaterialTheme.colorScheme.onSurfaceVariant),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(128.dp)
-                        .padding(15.dp),
-                    value = movie.notes,
-                    onValueChange = {
-                        viewModel.updateNotesText(it)
-                    },
-                    maxLines = 10,
-                    placeholder = {
-                        Text(text = "Write any notes here")
-                    }
-                )
 
                 Spacer(modifier = Modifier.height(10.dp))
             }
         }
     }
 }
+
 
 
 
@@ -225,7 +233,8 @@ fun MovieDetailScreen(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
             CircularProgressIndicator()
         }
-    } else if(movieDetail == null) {
+    }
+    else if(movieDetail == null) {
 
         BasicDetailView(movie, viewModel)
 
@@ -259,32 +268,11 @@ fun MovieDetailScreen(
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        AnimatedImageLoader(url = movie.posterUrl, width = 128.dp, height = 170.dp)
 
-                        Spacer(modifier = Modifier.width(15.dp))
-
-                        Column(
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("${movieDetail?.runtime}", style = MaterialTheme.typography.labelSmall)
-                            Text(
-                                "${movieDetail?.genres?.forEach { it.name + ' ' }}",
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                            Text(
-                                "${movieDetail?.release_date}",
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        }
-                    }
+                    InformationSection(posterUrl = movie.posterUrl, text1 = if(movieDetail?.runtime != null) "${movieDetail?.runtime}m runtime" else "", genres = movieDetail?.genresString ?: "", date = "${movie.year}")
 
 
                     Text(movieDetail?.overview ?: "")
-
 
                     RatingRow(
                         currRating = movie.rating,
@@ -296,30 +284,10 @@ fun MovieDetailScreen(
 
                     Spacer(modifier = Modifier.height(25.dp))
 
-                    Text(
-                        "Movie Notes",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Left,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp, 0.dp)
-                    )
-
-                    OutlinedTextField(
-                        colors = TextFieldDefaults.outlinedTextFieldColors(MaterialTheme.colorScheme.onSurfaceVariant),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(128.dp)
-                            .padding(15.dp),
+                    NotesSection(
                         value = movie.notes,
-                        onValueChange = {
-                            viewModel.updateNotesText(it)
-                        },
-                        maxLines = 10,
-                        placeholder = {
-                            Text(text = "Write any notes here")
-                        }
+                        onValueChanged = { viewModel.updateNotesText(it) },
+                        header = "Movie Notes"
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -332,10 +300,9 @@ fun MovieDetailScreen(
 }
 
 
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Basic view that doesn't show any details
+ */
 @Composable
 fun BasicDetailView(
     movie: Movie,
@@ -375,7 +342,7 @@ fun BasicDetailView(
 
         ) {
             Text(
-                text = if (movie.watched) "Un-Watch" else "Watched",
+                text = if (movie.watched) "UnWatch" else "Watched",
                 fontWeight = FontWeight.Bold
             )
         }
@@ -392,30 +359,10 @@ fun BasicDetailView(
 
         Spacer(modifier = Modifier.height(25.dp))
 
-        Text(
-            "Movie Notes",
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 20.sp,
-            textAlign = TextAlign.Left,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp, 0.dp)
-        )
-
-        OutlinedTextField(
-            colors = TextFieldDefaults.outlinedTextFieldColors(MaterialTheme.colorScheme.onSurfaceVariant),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(128.dp)
-                .padding(15.dp),
+        NotesSection(
             value = movie.notes,
-            onValueChange = {
-                viewModel.updateNotesText(it)
-            },
-            maxLines = 10,
-            placeholder = {
-                Text(text = "Write any notes here")
-            }
+            onValueChanged = { viewModel.updateNotesText(it) },
+            header = "Notes"
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -423,6 +370,61 @@ fun BasicDetailView(
 
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NotesSection(value: String, onValueChanged: (String) -> Unit, header: String) {
+    Text(
+        header,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontSize = 20.sp,
+        textAlign = TextAlign.Left,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp, 0.dp)
+    )
+
+    OutlinedTextField(
+        colors = TextFieldDefaults.outlinedTextFieldColors(MaterialTheme.colorScheme.onSurfaceVariant),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(128.dp)
+            .padding(15.dp),
+        value = value,
+        onValueChange = onValueChanged,
+        maxLines = 10,
+        placeholder = {
+            Text(text = "Write any notes here")
+        }
+    )
+}
+
+
+@Composable
+fun InformationSection(posterUrl: String, text1: String?, genres: String?, date: String?) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start
+    ) {
+        AnimatedImageLoader(url = posterUrl, width = 128.dp, height = 170.dp)
+
+        Spacer(modifier = Modifier.width(15.dp))
+
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text1 ?: "", style = MaterialTheme.typography.labelSmall)
+            Text(
+                genres ?: "",
+                style = MaterialTheme.typography.labelSmall
+            )
+            Text(
+                date ?: "",
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+    }
+}
 
 @Composable
 fun RatingRow(currRating: Int, onClick: (Int) -> Unit) {
