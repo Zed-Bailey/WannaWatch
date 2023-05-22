@@ -1,4 +1,4 @@
-package com.zed.wannawatch.ui.screens.main
+package com.zed.wannawatch.ui.screens.saved
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*

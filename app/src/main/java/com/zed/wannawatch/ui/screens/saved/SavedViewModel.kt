@@ -1,4 +1,4 @@
-package com.zed.wannawatch.ui.screens.main
+package com.zed.wannawatch.ui.screens.saved
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
@@ -17,12 +17,11 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val repository: MovieRepository): ViewModel() {
+class SavedViewModel @Inject constructor(private val repository: MovieRepository): ViewModel() {
 
 
     val movies = MutableLiveData<List<Movie>>()
 
-    val fabExpanded = mutableStateOf(true)
 
     var dataLoading = mutableStateOf(false)
 
@@ -71,9 +70,9 @@ class HomeViewModel @Inject constructor(private val repository: MovieRepository)
 //https://developer.android.com/codelabs/android-room-with-a-view-kotlin#9
 class HomeViewModelFactory(private val repository: MovieRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(SavedViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return HomeViewModel(repository) as T
+            return SavedViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

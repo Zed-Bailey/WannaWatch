@@ -1,4 +1,4 @@
-package com.zed.wannawatch.ui.screens.main
+package com.zed.wannawatch.ui.screens.saved
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -24,28 +24,24 @@ import com.zed.wannawatch.ui.navigation.Screen
 
 
 @Composable
-fun HomeScreen(
+fun SavedScreen(
     navController: NavController,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: SavedViewModel = hiltViewModel()
 ) {
 
-        Home(
+        Saved(
             viewModel = viewModel,
             movieClicked = {
                 navController.navigate(Screen.DetailScreen.route + "/${it}")
             },
-            searchClicked = {
-                navController.navigate(Screen.SearchScreen.route)
-            }
         )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(
-    viewModel: HomeViewModel,
+fun Saved(
+    viewModel: SavedViewModel,
     movieClicked: (String) -> Unit,
-    searchClicked: () -> Unit
 ) {
 
     val movies by viewModel.movies.observeAsState()
@@ -63,16 +59,6 @@ fun Home(
 
     val listState = rememberLazyGridState()
 
-
-    val expandedFabState = remember {
-        derivedStateOf {
-            listState.firstVisibleItemIndex == 0
-        }
-    }
-
-    LaunchedEffect(expandedFabState.value) {
-        viewModel.fabExpanded.value = expandedFabState.value
-    }
 
     LaunchedEffect(Unit) {
         viewModel.getAllMovies()
@@ -177,16 +163,6 @@ fun Home(
                 }
             }
         }
-
-
-
-//        SearchFAB(modifier = Modifier
-//            .align(Alignment.BottomEnd)
-//            .padding(20.dp),
-//            expanded = viewModel.fabExpanded.value
-//        ) {
-//            searchClicked()
-//        }
     }
 }
 
