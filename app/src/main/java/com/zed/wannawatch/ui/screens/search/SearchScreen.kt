@@ -30,10 +30,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.zed.wannawatch.R
-import com.zed.wannawatch.services.MovieApplication
 import com.zed.wannawatch.services.models.movie.Movie
 import com.zed.wannawatch.services.models.movie.MovieType
 import com.zed.wannawatch.services.utils.TMDBConstants
@@ -46,22 +45,10 @@ import kotlin.random.Random
 @Composable
 fun SearchScreen(
     navController: NavController,
-    viewModel: SearchViewModel = viewModel(
-        factory = SearchViewModelFactory((LocalContext.current.applicationContext as MovieApplication).repository)
-    )
+    viewModel: SearchViewModel = hiltViewModel()
 ) {
 
-//    WannaWatchScaffold(
-//        scaffoldState = ScaffoldState(
-//            shouldShowBack = true,
-//            onBackPressed = {
-//                navController.navigateUp()
-//            },
-//            actions = { }
-//        )
-//    ) {
-        Search(viewModel = viewModel)
-//    }
+    Search(viewModel = viewModel)
 
 }
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
@@ -174,7 +161,10 @@ fun Search(
 
             if(randomChance) {
                 Box(Modifier.fillMaxSize(), contentAlignment = BottomStart) {
-                    Box(Modifier.width(50.dp).height(50.dp)) {
+                    Box(
+                        Modifier
+                            .width(50.dp)
+                            .height(50.dp)) {
                         LottieAnimatedView(resId = R.raw.lottie_dancing_duck)
                     }
                 }
@@ -195,7 +185,10 @@ fun Search(
                 movieResults?.let {
                     val results = it.results
                     if(results.isEmpty()) {
-                        Box(Modifier.fillMaxWidth().padding(top = 50.dp), contentAlignment = Center) {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(top = 50.dp), contentAlignment = Center) {
                             Text("No Movies Found", style= MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                         }
                     }
@@ -232,7 +225,10 @@ fun Search(
                 seriesResults?.let {
                     val results = it.results
                     if(results.isEmpty()) {
-                        Box(Modifier.fillMaxWidth().padding(top = 50.dp), contentAlignment = Center) {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(top = 50.dp), contentAlignment = Center) {
                             Text("No Series Found", style= MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                         }
                     }

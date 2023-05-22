@@ -6,9 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.zed.wannawatch.services.api.models.*
 import com.zed.wannawatch.services.models.movie.Movie
 import com.zed.wannawatch.services.models.movie.MovieType
 import com.zed.wannawatch.services.models.tmdb.MovieDetailResult
@@ -16,10 +14,17 @@ import com.zed.wannawatch.services.models.tmdb.MovieResult
 import com.zed.wannawatch.services.models.tmdb.TMDBSearchResult
 import com.zed.wannawatch.services.models.tmdb.TvDetailResult
 import com.zed.wannawatch.services.models.tmdb.TvResult
-import com.zed.wannawatch.services.repository.*
+import com.zed.wannawatch.services.repository.MovieRepository
+import com.zed.wannawatch.services.repository.TMDBRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SearchViewModel(private val repository: MovieRepository): ViewModel() {
+@HiltViewModel
+class SearchViewModel @Inject constructor(
+    private val repository: MovieRepository,
+    private val tmdbRepository: TMDBRepository
+): ViewModel() {
 
     val movieSearchResults = MutableLiveData<TMDBSearchResult<MovieResult>>()
     val seriesSearchResults = MutableLiveData<TMDBSearchResult<TvResult>>()
@@ -39,7 +44,7 @@ class SearchViewModel(private val repository: MovieRepository): ViewModel() {
 
     var detailLoading = MutableLiveData(false)
 
-    private val tmdbRepository = TMDBRepositoryImpl()
+
 
 
     fun search(query: String, type: MovieType) {
@@ -133,16 +138,5 @@ class SearchViewModel(private val repository: MovieRepository): ViewModel() {
         if(!error) {
             repository.insertMovie(model)
         }
-    }
-}
-
-//https://developer.android.com/codelabs/android-room-with-a-view-kotlin#9
-class SearchViewModelFactory(private val repository: MovieRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SearchViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return SearchViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
