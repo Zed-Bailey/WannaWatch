@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.PathParser
 import com.zed.wannawatch.R
-import com.zed.wannawatch.ui.screens.search.AnimatedImageLoader
+import com.zed.wannawatch.ui.utils.AnimatedImageLoader
 import java.util.regex.Pattern
 
 @Composable

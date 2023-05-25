@@ -29,6 +29,9 @@ fun SavedScreen(
     viewModel: SavedViewModel = hiltViewModel()
 ) {
 
+    // todo add modal bottom sheet for filter options
+    // todo add range slider for ratings
+
         Saved(
             viewModel = viewModel,
             movieClicked = {
@@ -50,8 +53,8 @@ fun Saved(
 
     var watchedFilterStatus by remember { mutableStateOf(HomeScreenWatchedFilter.All) }
 
-
     var ratingFilterValue by remember { mutableStateOf(MovieRatingFilter.All) }
+
 
 
     var mediaTypeFilterValue by remember { mutableStateOf(MediaTypeFilter.AllMedia) }
