@@ -136,7 +136,7 @@ fun Navigation() {
                         composable(
                             route = Screen.SearchScreen.route ,
                         ) {
-                            SearchScreen(navController)
+                            SearchScreen(navController = navController, snackbarHostState = snackbarHostState)
                         }
 
                         composable(
@@ -164,7 +164,8 @@ fun Navigation() {
                                 }
                             )
                         ) {
-                            DiscoverDetailScreen()
+
+                            DiscoverDetailScreen(snackbarHostState)
                         }
 
                     }
