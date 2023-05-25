@@ -1,6 +1,7 @@
 package com.zed.wannawatch.ui.screens.discover
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,13 +39,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.valentinilk.shimmer.shimmer
+import com.zed.wannawatch.services.models.movie.MovieType
 import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovieItem
 import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovies
 import com.zed.wannawatch.services.models.tmdb.trending.tv.TrendingTvShows
 import com.zed.wannawatch.services.utils.TMDBConstants
 import com.zed.wannawatch.ui.ErrorState
+import com.zed.wannawatch.ui.navigation.Screen
 import com.zed.wannawatch.ui.screens.BackDropImage
-import com.zed.wannawatch.ui.screens.search.AnimatedImageLoader
+import com.zed.wannawatch.ui.utils.AnimatedImageLoader
 
 @Composable
 fun DiscoverScreen(
@@ -71,7 +74,9 @@ fun DiscoverScreen(
     else {
         when (val state = errorState) {
             is ErrorState.NoError -> {
-                DiscoverView(movies = movieData!!, tvShows = tvData!!)
+                DiscoverView(movies = movieData!!, tvShows = tvData!!) { id, type ->
+                    navController.navigate(Screen.DiscoverDetailScreen.route + "/$id/$type")
+                }
             }
 
             is ErrorState.Error -> {
@@ -92,7 +97,7 @@ fun DiscoverScreen(
 }
 
 @Composable
-fun DiscoverView(movies: TrendingMovies, tvShows: TrendingTvShows) {
+fun DiscoverView(movies: TrendingMovies, tvShows: TrendingTvShows, showDetail: (Int, MovieType) -> Unit) {
     val listState = rememberLazyGridState()
     LazyVerticalGrid(
         state = listState,
@@ -105,11 +110,21 @@ fun DiscoverView(movies: TrendingMovies, tvShows: TrendingTvShows) {
     ) {
 
         item(span = { GridItemSpan(maxCurrentLineSpan) }) {
-            HeaderMovieItem(movies.results.first())
+            HeaderMovieItem(
+                movies.results.first(),
+                onAdd = {
+
+                },
+                onDetails = {
+                    showDetail(movies.results.first().id, MovieType.Movie)
+                }
+            )
         }
 
         item(span = { GridItemSpan(maxCurrentLineSpan) }) {
-            Trending(movies, tvShows)
+            Trending(movies, tvShows) { id, type ->
+                showDetail(id, type)
+            }
         }
 
         item(span = { GridItemSpan(maxCurrentLineSpan) }) { Spacer(modifier = Modifier.height(20.dp)) }
@@ -141,12 +156,12 @@ fun DiscoverView(movies: TrendingMovies, tvShows: TrendingTvShows) {
 }
 
 @Composable
-fun HeaderMovieItem(movie: TrendingMovieItem) {
+fun HeaderMovieItem(movie: TrendingMovieItem, onAdd: () -> Unit, onDetails: () -> Unit) {
 
     BackDropImage(url = TMDBConstants.backdropBasePath + movie.backdrop_path, title = movie.title) {
         Button(
             modifier = Modifier.padding(end = 5.dp),
-            onClick = { /*TODO add */ },
+            onClick = onAdd,
             shape = RoundedCornerShape(5.dp)
 
         ) {
@@ -154,7 +169,7 @@ fun HeaderMovieItem(movie: TrendingMovieItem) {
         }
 
         OutlinedButton(
-            onClick = { /*TODO details */ },
+            onClick = onDetails,
             shape = RoundedCornerShape(5.dp)
         ) {
             Text("Details")
@@ -209,7 +224,7 @@ private fun LatestTrailers() {
     }
 }
 @Composable
-fun Trending(movies: TrendingMovies, tvShows: TrendingTvShows) {
+fun Trending(movies: TrendingMovies, tvShows: TrendingTvShows, onClick: (Int, MovieType) -> Unit) {
     Column() {
         Text("Trending Movies", style = MaterialTheme.typography.headlineSmall)
 
@@ -224,8 +239,10 @@ fun Trending(movies: TrendingMovies, tvShows: TrendingTvShows) {
                         modifier = Modifier
                             .height(170.dp)
                             .width(128.dp)
-                            .clip(RoundedCornerShape(5.dp)),
+                            .clip(RoundedCornerShape(5.dp))
+                            .clickable { onClick(movie.id, MovieType.Movie) },
                         contentAlignment = Alignment.Center
+
 
                     ) {
                         AnimatedImageLoader(
@@ -251,7 +268,8 @@ fun Trending(movies: TrendingMovies, tvShows: TrendingTvShows) {
                         modifier = Modifier
                             .height(170.dp)
                             .width(128.dp)
-                            .clip(RoundedCornerShape(10.dp)),
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { onClick(show.id, MovieType.Series) },
                         contentAlignment = Alignment.Center
 
                     ) {
