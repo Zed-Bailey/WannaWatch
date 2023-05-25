@@ -92,6 +92,7 @@ dependencies {
 
 
     implementation 'androidx.compose.material3:material3'
+    implementation "androidx.compose.material:material:$compose_version"
 
     // Android Studio Preview support
     implementation 'androidx.compose.ui:ui-tooling-preview'
@@ -114,7 +115,7 @@ dependencies {
     implementation "androidx.compose.material:material-icons-extended"
 
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.28.0"
-
+    implementation "com.google.accompanist:accompanist-navigation-material:0.31.2-alpha"
 
     implementation "androidx.browser:browser:1.5.0"
 
