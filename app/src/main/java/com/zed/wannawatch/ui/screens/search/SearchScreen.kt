@@ -1,6 +1,5 @@
 package com.zed.wannawatch.ui.screens.search
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -16,45 +15,40 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.zed.wannawatch.R
-import com.zed.wannawatch.services.models.movie.Movie
 import com.zed.wannawatch.services.models.movie.MovieType
 import com.zed.wannawatch.services.utils.TMDBConstants
-import com.zed.wannawatch.ui.LottieAnimatedView
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlin.random.Random
-
+import com.zed.wannawatch.ui.ErrorState
+import com.zed.wannawatch.ui.navigation.Screen
+import com.zed.wannawatch.ui.utils.AnimatedImageLoader
 
 @Composable
 fun SearchScreen(
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
-
-    Search(viewModel = viewModel)
-
+    Search(viewModel = viewModel, snackbarHostState = snackbarHostState) { id, type ->
+        navController.navigate(Screen.DiscoverDetailScreen.route + "/$id/$type")
+    }
 }
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun Search(
-   viewModel: SearchViewModel
+   viewModel: SearchViewModel,
+   snackbarHostState: SnackbarHostState,
+   itemClicked: (Int, MovieType) -> Unit
 ) {
 
     var searchString by remember  {
@@ -64,26 +58,32 @@ fun Search(
         mutableStateOf(false)
     }
 
-    var dialogOpen by remember {
-        mutableStateOf(false)
-    }
 
     val movieResults by viewModel.movieSearchResults.observeAsState()
     val seriesResults by viewModel.seriesSearchResults.observeAsState()
 
     val focusManager = LocalFocusManager.current
-    val context = LocalContext.current
 
-    var selected by remember { mutableStateOf(MovieType.Movie) }
+    val selected by viewModel.selected
 
-    val detailLoading by viewModel.detailLoading.observeAsState()
+    val errorState = viewModel.errorState
 
-    val seriesDetail = viewModel.seriesDetail.observeAsState()
-    val movieDetail = viewModel.movieDetail.observeAsState()
+
+    LaunchedEffect(errorState) {
+        when(errorState) {
+            is ErrorState.Error -> {
+                val action = snackbarHostState.showSnackbar(errorState.msg, "retry")
+                if(action == SnackbarResult.ActionPerformed) {
+                    viewModel.retry(searchString, selected)
+                }
+            }
+
+            is ErrorState.NoError -> {}
+        }
+    }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
-
-
 
             SearchField(
                 searchString = searchString,
@@ -118,7 +118,7 @@ fun Search(
             Spacer(Modifier.width(5.dp))
             FilterChip(
                 selected = selected == MovieType.Movie,
-                onClick = { selected = MovieType.Movie },
+                onClick = { viewModel.setSelectedType(MovieType.Movie) },
                 label = { Text("Movie") },
                 leadingIcon = if (selected == MovieType.Movie) {
                     {
@@ -137,7 +137,7 @@ fun Search(
 
             FilterChip(
                 selected = selected == MovieType.Series,
-                onClick = { selected = MovieType.Series },
+                onClick = { viewModel.setSelectedType(MovieType.Series) },
                 label = { Text("Series") },
                 leadingIcon = if (selected == MovieType.Series) {
                     {
@@ -154,28 +154,10 @@ fun Search(
         }
 
 
-        if(movieResults == null && seriesResults == null) {
-            val randomChance by remember {
-                mutableStateOf(Random.nextFloat() <= 0.05f)
-            }
-
-            if(randomChance) {
-                Box(Modifier.fillMaxSize(), contentAlignment = BottomStart) {
-                    Box(
-                        Modifier
-                            .width(50.dp)
-                            .height(50.dp)) {
-                        LottieAnimatedView(resId = R.raw.lottie_dancing_duck)
-                    }
-                }
-
-            }
-        }
-
         if(viewModel.loading) {
 
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
-                LottieAnimatedView(resId = R.raw.lottie_cinema_loading)
+                CircularProgressIndicator()
             }
 
         } else {
@@ -209,10 +191,10 @@ fun Search(
                                 .width(128.dp)
                                 .padding(5.dp)
                                 .clickable {
-                                    dialogOpen = true
-                                    viewModel.getDetail(results[it].id, selected)
+                                    itemClicked(results[it].id, selected)
                                 }) {
 
+                                // todo fix sizing
                                 AnimatedImageLoader(url = TMDBConstants.imageBasePath + results[it].poster_path, 128.dp, 192.dp)
 
                             }
@@ -249,10 +231,9 @@ fun Search(
                                 .width(128.dp)
                                 .padding(5.dp)
                                 .clickable {
-                                    dialogOpen = true
-                                    viewModel.getDetail(results[it].id, selected)
+                                    itemClicked(results[it].id, selected)
                                 }) {
-
+                                // todo fix sizing
                                 AnimatedImageLoader(url = TMDBConstants.imageBasePath + results[it].poster_path, 128.dp, 192.dp)
 
                             }
@@ -261,85 +242,9 @@ fun Search(
                 }
             }
         }
-
-        if(dialogOpen) {
-
-            Dialog(
-                // dialog doesn't change shape based on dynamic content in recomposition
-                // known bug and can be fixed with the usePlatformDefaultWidth value  in dialog properties
-                // https://issuetracker.google.com/issues/221643630#comment9
-                // https://stackoverflow.com/a/72018943
-                properties = DialogProperties(usePlatformDefaultWidth = false),
-                onDismissRequest = {
-                    dialogOpen = false
-                }
-            ) {
-
-                if(selected == MovieType.Movie) {
-                    movieDetail.value?.let {
-                        MovieDetailDialog(
-                            model = it,
-                            detailLoading = detailLoading,
-                            onClose = {
-                                dialogOpen = false
-                            },
-                            onAdd =  {
-                                val movie = Movie(
-                                    imdbID = it.imdb_id!!,
-                                    tmdbId = it.id,
-                                    title = it.title,
-                                    description = it.overview ?: it.tagline ?: "No description provided",
-                                    year = it.release_date.take(4).toInt(),
-                                    resultType = MovieType.Movie,
-                                    posterUrl = TMDBConstants.imageBasePath + (it.poster_path ?: it.backdrop_path)
-                                )
-                                dialogOpen = false
-                                viewModel.addModel(movie)
-                                Toast.makeText(context, "Added Movie", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
-                } else if(selected == MovieType.Series) {
-                    seriesDetail.value?.let {
-                        SeriesDetailDialog(
-                            model = it,
-                            detailLoading = detailLoading,
-                            onAdd =  {
-                                val movie = Movie(
-                                    imdbID = "",
-                                    tmdbId = it.id,
-                                    title = it.name,
-                                    description = it.overview,
-                                    year = it.first_air_date.take(4).toInt(),
-                                    resultType = MovieType.Series,
-                                    posterUrl = TMDBConstants.imageBasePath + (it.poster_path ?: it.backdrop_path),
-                                    seriesSeasons = Json.encodeToString(value = it.seasons),
-                                )
-                                dialogOpen = false
-                                viewModel.addModel(movie)
-                                Toast.makeText(context, "Added Series", Toast.LENGTH_SHORT).show()
-                            },
-                            onClose = {
-                                dialogOpen = false
-                            }
-                        )
-                    }
-                }
-
-            }
-        }
-
-        if(viewModel.error) {
-            Toast.makeText(context, viewModel.errorMessage, Toast.LENGTH_LONG).show()
-        }
-
-
     }
 
 }
-
-
-
 
 
 
