@@ -1,4 +1,4 @@
-package com.zed.wannawatch.ui.screens.search
+package com.zed.wannawatch.ui.utils
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
