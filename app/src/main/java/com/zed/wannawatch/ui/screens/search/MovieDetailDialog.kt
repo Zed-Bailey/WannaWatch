@@ -2,13 +2,9 @@ package com.zed.wannawatch.ui.screens.search
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,14 +15,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,23 +30,9 @@ import com.zed.wannawatch.services.models.tmdb.MovieDetailResult
 import com.zed.wannawatch.services.utils.TMDBConstants
 
 @Composable
-fun MovieDetailDialog(model: MovieDetailResult, detailLoading: Boolean?, onAdd: () -> Unit, onClose: () -> Unit) {
+fun MovieDetailDialog(model: MovieDetailResult, onAdd: () -> Unit) {
     val genres = model.genres.map { it.name }
 
-    Card(
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        modifier = Modifier
-            .padding(20.dp)
-            .fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            IconButton(onClick = onClose) {
-                Icon(Icons.Rounded.Close, null)
-            }
-        }
         Column(
             modifier = Modifier
                 .padding(20.dp)
@@ -64,92 +41,81 @@ fun MovieDetailDialog(model: MovieDetailResult, detailLoading: Boolean?, onAdd: 
 
         ) {
 
-            if (detailLoading == true) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    CircularProgressIndicator(Modifier.align(Alignment.Center))
-                }
-            }
-            else {
+            AsyncImage(
+                model = TMDBConstants.imageBasePath + (model.poster_path ?: model.backdrop_path),
+                contentDescription = "poster image for ${model.title}",
+                modifier = Modifier
+                    .aspectRatio(2f / 3f)
+                    .height(170.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
 
-                AsyncImage(
-                    model = TMDBConstants.imageBasePath + (model.poster_path ?: model.backdrop_path),
-                    contentDescription = "poster image for ${model.title}",
-                    modifier = Modifier
-                        .aspectRatio(2f / 3f)
-                        .height(170.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
 
+            Text(
+                model.title,
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp)
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp),
+            ) {
+
+                Text(text = model.release_date.take(4))
+
+                Spacer(modifier = Modifier.height(5.dp))
 
                 Text(
-                    model.title,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 10.dp)
+
+                    if (model.runtime?.toString() != "")
+                        "${model.runtime?.toString()} mins runtime"
+                    else
+                        "Runtime unavailable"
                 )
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp),
-                ) {
 
-                    Text(text = model.release_date.take(4))
+                Spacer(modifier = Modifier.height(5.dp))
 
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Text(
-
-                        if (model.runtime?.toString() != "")
-                            "${model.runtime?.toString()} mins runtime"
-                        else
-                            "Runtime unavailable"
-                    )
-
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    LazyRow() {
-                        items(genres.size) {
-                            Text(
-                                genres[it],
-                                style = MaterialTheme.typography.labelMedium,
-                                modifier = Modifier
-                                    .padding(end = 5.dp)
-                                    .border(
-                                        BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                                        RoundedCornerShape(5.dp)
-                                    )
-                                    .padding(horizontal = 8.dp, vertical = 2.5.dp)
-                            )
-                        }
+                LazyRow() {
+                    items(genres.size) {
+                        Text(
+                            genres[it],
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier
+                                .padding(end = 5.dp)
+                                .border(
+                                    BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                                    RoundedCornerShape(5.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 2.5.dp)
+                        )
                     }
-                }
-
-                Text(model.overview ?: model.tagline ?: "No description available", style = MaterialTheme.typography.bodyMedium)
-
-                Button(
-                    onClick = onAdd,
-                    modifier = Modifier
-                        .padding(top = 20.dp)
-                        .align(Alignment.CenterHorizontally)
-                ) {
-                    Icon(
-                        Icons.Rounded.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = "I Wanna Watch!")
                 }
             }
 
+            Text(model.overview ?: model.tagline ?: "No description available", style = MaterialTheme.typography.bodyMedium)
 
+            Button(
+                onClick = onAdd,
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Icon(
+                    Icons.Rounded.Add,
+                    contentDescription = null,
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                Text(text = "I Wanna Watch!")
+            }
         }
 
 
-    }
 }
