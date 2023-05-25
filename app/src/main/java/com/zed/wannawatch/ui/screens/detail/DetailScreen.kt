@@ -26,16 +26,20 @@ import com.zed.wannawatch.services.models.movie.MovieType
 import com.zed.wannawatch.services.utils.TMDBConstants
 import com.zed.wannawatch.ui.AppBarState
 import com.zed.wannawatch.ui.screens.BackDropImage
-import com.zed.wannawatch.ui.screens.search.AnimatedImageLoader
+import com.zed.wannawatch.ui.utils.AnimatedImageLoader
+import kotlinx.coroutines.launch
 
 @Composable
 fun DetailScreen(
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     onComposing: (AppBarState) -> Unit,
     viewModel: DetailViewModel = hiltViewModel()
 ) {
 
     val detailState by viewModel.movieState.collectAsState()
+
+    val coroutineScope = rememberCoroutineScope()
 
     var deleteDialogOpen by remember {
         mutableStateOf(false)
@@ -52,8 +56,6 @@ fun DetailScreen(
                 actions = {
                     IconButton(onClick = {
                         deleteDialogOpen = true
-//                        viewModel.delete(detailState)
-//                        navController.popBackStack()
                     }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
@@ -89,6 +91,11 @@ fun DetailScreen(
                     onClick = {
                         viewModel.delete(detailState)
                         deleteDialogOpen = false
+
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("deleted successfully")
+                        }
+
                         navController.navigateUp()
                     },
                     shape = RoundedCornerShape(5.dp)
@@ -104,6 +111,7 @@ fun DetailScreen(
                     shape = RoundedCornerShape(5.dp)
                 ) {
                     Text("Close")
+
                 }
             }
         )
@@ -125,7 +133,6 @@ fun DetailScreen(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TvDetailScreen(
     movie: Movie,
@@ -163,7 +170,9 @@ fun TvDetailScreen(
 
                 Button(
                     modifier = Modifier.padding(end = 5.dp),
-                    onClick = { viewModel.toggleWatched() }) {
+                    onClick = { viewModel.toggleWatched() },
+                    shape = RoundedCornerShape(5.dp)
+                ) {
                     Text(
                         text = if (movie.watched) "UnWatch" else "Watched",
                         fontWeight = FontWeight.Bold
@@ -252,6 +261,7 @@ fun MovieDetailScreen(
 
                 Button(
                     modifier = Modifier.padding(end = 5.dp),
+                    shape = RoundedCornerShape(5.dp),
                     onClick = { viewModel.toggleWatched() }) {
                     Text(
                         text = if (movie.watched) "UnWatch" else "Watched",
