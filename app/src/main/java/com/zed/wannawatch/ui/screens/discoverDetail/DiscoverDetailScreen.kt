@@ -3,7 +3,6 @@ package com.zed.wannawatch.ui.screens.discoverDetail
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -15,14 +14,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.zed.wannawatch.services.models.movie.Movie
 import com.zed.wannawatch.services.models.movie.MovieType
 import com.zed.wannawatch.services.utils.TMDBConstants
 import com.zed.wannawatch.ui.ErrorState
-import com.zed.wannawatch.ui.screens.search.MovieDetailDialog
-import com.zed.wannawatch.ui.screens.search.SeriesDetailDialog
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -63,7 +59,6 @@ fun DiscoverDetailScreen(
             .fillMaxWidth()
             .background(
                 MaterialTheme.colorScheme.surface,
-                RoundedCornerShape(topStart = 5.dp, topEnd = 5.dp)
             ),
         contentAlignment = Alignment.Center
     ) {

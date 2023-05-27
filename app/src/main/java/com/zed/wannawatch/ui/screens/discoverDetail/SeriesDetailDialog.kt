@@ -1,4 +1,4 @@
-package com.zed.wannawatch.ui.screens.search
+package com.zed.wannawatch.ui.screens.discoverDetail
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
