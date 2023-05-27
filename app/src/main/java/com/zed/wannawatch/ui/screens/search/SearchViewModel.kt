@@ -1,38 +1,29 @@
 package com.zed.wannawatch.ui.screens.search
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zed.wannawatch.services.models.movie.MovieType
-import com.zed.wannawatch.services.models.tmdb.MovieResult
-import com.zed.wannawatch.services.models.tmdb.TMDBSearchResult
-import com.zed.wannawatch.services.models.tmdb.TvResult
-import com.zed.wannawatch.services.repository.MovieRepository
 import com.zed.wannawatch.services.repository.TMDBRepository
-import com.zed.wannawatch.ui.ErrorState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val repository: MovieRepository,
     private val tmdbRepository: TMDBRepository
 ): ViewModel() {
 
-    val movieSearchResults = MutableLiveData<TMDBSearchResult<MovieResult>>()
-    val seriesSearchResults = MutableLiveData<TMDBSearchResult<TvResult>>()
+    private val _state = MutableStateFlow<SearchState>(SearchState.Nothing)
+    val state = _state.asStateFlow()
 
-
-    var errorState by mutableStateOf<ErrorState>(ErrorState.NoError)
-
-    var loading by mutableStateOf(false)
-        private set
 
     var selected = mutableStateOf(MovieType.Movie)
+
+    var lastSearchString = ""
+
 
     fun setSelectedType(type: MovieType) {
         selected.value = type
@@ -41,43 +32,40 @@ class SearchViewModel @Inject constructor(
 
 
     fun search(query: String, type: MovieType) {
-        loading = true
+        lastSearchString = query
 
         viewModelScope.launch{
+            _state.value = SearchState.Loading
+
             when(type) {
                 MovieType.Movie -> {
 
                     val response = tmdbRepository.searchMovie(query)
-                    if(response != null) {
-                        movieSearchResults.value = response
-                    } else {
-                        // set error
-                        errorState = ErrorState.Error("Error loading movie search results")
-                    }
 
-                    loading = false
+                    if (response == null) {
+                        _state.value = SearchState.Error("Sorry there was an error while searching")
+                    } else {
+                        _state.value = SearchState.MovieSearchSuccess(response)
+                    }
                 }
 
                 MovieType.Series -> {
                     val response = tmdbRepository.searchTv(query)
-                    if(response != null) {
-                        seriesSearchResults.value = response
+                    if (response == null) {
+                        _state.value = SearchState.Error("Sorry there was an error while searching")
                     } else {
-                        // set error
-                        errorState = ErrorState.Error("Error loading series search results")
+                        _state.value = SearchState.SeriesSearchSuccess(response)
                     }
-
-                    loading = false
                 }
             }
         }
 
     }
 
-    fun retry(query: String, type: MovieType) {
-
-        errorState = ErrorState.NoError
-
-        search(query, type)
+    /**
+     * Retry's the last searched query
+     */
+    fun retry() {
+        search(lastSearchString, selected.value)
     }
 }
