@@ -105,7 +105,8 @@ fun MovieDetailDialog(model: MovieDetailResult, onAdd: () -> Unit) {
                 onClick = onAdd,
                 modifier = Modifier
                     .padding(top = 20.dp)
-                    .align(Alignment.CenterHorizontally)
+                    .align(Alignment.CenterHorizontally),
+                shape = RoundedCornerShape(5.dp)
             ) {
                 Icon(
                     Icons.Rounded.Add,
@@ -115,6 +116,11 @@ fun MovieDetailDialog(model: MovieDetailResult, onAdd: () -> Unit) {
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = "I Wanna Watch!")
             }
+
+
+
+
+
         }
 
 
