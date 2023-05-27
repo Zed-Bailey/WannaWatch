@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +45,6 @@ import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovieItem
 import com.zed.wannawatch.services.models.tmdb.trending.movie.TrendingMovies
 import com.zed.wannawatch.services.models.tmdb.trending.tv.TrendingTvShows
 import com.zed.wannawatch.services.utils.TMDBConstants
-import com.zed.wannawatch.ui.ErrorState
 import com.zed.wannawatch.ui.navigation.Screen
 import com.zed.wannawatch.ui.screens.BackDropImage
 import com.zed.wannawatch.ui.utils.AnimatedImageLoader
@@ -55,10 +55,7 @@ fun DiscoverScreen(
     navController: NavController
 ) {
 
-    val movieData by viewModel.movieData
-    val tvData by viewModel.tvShowData
-    val loading by viewModel.loading
-    val errorState by viewModel.errorState
+    val state by viewModel.state.collectAsState()
 
 
     LaunchedEffect(Unit) {
@@ -66,34 +63,40 @@ fun DiscoverScreen(
     }
 
 
-    if(loading) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    when(val s = state) {
+        is DiscoverState.Loading -> {
+            LoadingView()
         }
-    }
-    else {
-        when (val state = errorState) {
-            is ErrorState.NoError -> {
-                DiscoverView(movies = movieData!!, tvShows = tvData!!) { id, type ->
-                    navController.navigate(Screen.DiscoverDetailScreen.route + "/$id/$type")
-                }
-            }
-
-            is ErrorState.Error -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(state.msg)
-                        Button(onClick = { viewModel.load() }) {
-                            Text("retry")
-                        }
-                    }
-                }
+        is DiscoverState.Error -> {
+            ErrorView(s) {
+                viewModel.load()
             }
         }
-
+        is DiscoverState.Success -> {
+            DiscoverView(movies = s.movies, tvShows = s.series) { id, type ->
+                navController.navigate(Screen.DiscoverDetailScreen.route + "/$id/$type")
+            }
+        }
     }
+}
 
+@Composable
+fun ErrorView(state: DiscoverState.Error, onRetry: () -> Unit) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(state.message)
+            Button(onClick = onRetry) {
+                Text("retry")
+            }
+        }
+    }
+}
 
+@Composable
+fun LoadingView() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    }
 }
 
 @Composable
